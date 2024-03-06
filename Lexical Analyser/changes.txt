@@ -1,0 +1,10 @@
+import statement
+null, undefined
+# type, interface
+recognising types
+# let, const, var
+destructure, spread operator
+class, objects
+# async, arrow functions
+# console.log
+# union operator, intersection operator
