@@ -1,0 +1,2055 @@
+Terminals unused in grammar
+
+    ELIF
+
+
+State 4 conflicts: 9 reduce/reduce
+State 26 conflicts: 1 shift/reduce
+State 42 conflicts: 1 shift/reduce
+State 68 conflicts: 1 reduce/reduce
+State 69 conflicts: 1 reduce/reduce
+State 78 conflicts: 3 reduce/reduce
+State 79 conflicts: 3 reduce/reduce
+State 130 conflicts: 2 shift/reduce
+State 147 conflicts: 1 reduce/reduce
+
+
+Grammar
+
+    0 $accept: main $end
+
+    1 main: importList body
+
+    2 importList: imports importList
+    3           | imports
+    4           | ε
+
+    5 imports: IMPORT '{' moduleList '}' FROM STRINGVALUE ';'
+    6        | IMPORT '{' modules '}' AS IDENTIFIER FROM STRINGVALUE ';'
+    7        | IMPORT moduleList FROM STRINGVALUE ';'
+    8        | IMPORT modules AS IDENTIFIER FROM STRINGVALUE ';'
+
+    9 moduleList: moduleList ',' moduleList
+   10           | modules
+
+   11 modules: IDENTIFIER
+   12        | MULT
+
+   13 body: block body
+   14     | ε
+
+   15 block: function
+
+   16 $@1: ε
+
+   17 block: WHILE $@1 '(' condition ')' '{' body '}'
+
+   18 $@2: ε
+
+   19 block: IF $@2 '(' condition ')' '{' body '}' else
+   20      | statement ';'
+
+   21 $@3: ε
+
+   22 block: CONSOLELOG $@3 '(' console_outputs ')' ';'
+
+   23 console_outputs: STRINGVALUE
+   24                | IDENTIFIER
+   25                | expression
+
+   26 $@4: ε
+
+   27 $@5: ε
+
+   28 function: FUNCTION $@4 IDENTIFIER $@5 '(' parameterList ')' '{' body return '}'
+
+   29 parameterList: parameter ',' parameterList
+   30              | parameter
+   31              | ε
+
+   32 $@6: ε
+
+   33 parameter: IDENTIFIER $@6 ':' datatype
+
+   34 datatype: NUMBERTYPE
+   35         | STRINGTYPE
+   36         | BOOLEANTYPE
+
+   37 $@7: ε
+
+   38 else: ELSE $@7 '{' body '}'
+   39     | ε
+
+   40 condition: condition and_or condition
+   41          | value relop value
+   42          | value
+
+   43 $@8: ε
+
+   44 condition: TRUE $@8
+
+   45 $@9: ε
+
+   46 condition: FALSE $@9
+
+   47 $@10: ε
+
+   48 statement: declaration IDENTIFIER $@10 ':' datatype init
+
+   49 $@11: ε
+
+   50 statement: IDENTIFIER $@11 '=' expression
+
+   51 $@12: ε
+
+   52 statement: IDENTIFIER $@12 relop expression
+
+   53 declaration: LET
+   54            | VAR
+   55            | CONST
+
+   56 init: '=' value
+   57     | '=' expression
+   58     | ε
+
+   59 expression: expression addops term
+   60           | term
+
+   61 term: term mulops factor
+   62     | factor
+
+   63 factor: base exponent base
+   64       | LOG '(' value ',' value ')'
+   65       | base
+
+   66 base: value
+   67     | '(' expression ')'
+
+   68 and_or: AND
+   69       | OR
+
+   70 exponent: POW
+
+   71 mulops: MULT
+   72       | DIV
+
+   73 addops: ADD
+   74       | SUB
+
+   75 relop: LT
+   76      | GT
+   77      | LE
+   78      | GE
+   79      | EQ
+   80      | NE
+
+   81 number: INTEGER
+   82       | FLOAT
+
+   83 value: number
+   84      | IDENTIFIER
+   85      | STRINGVALUE
+
+   86 $@13: ε
+
+   87 value: TRUE $@13
+
+   88 $@14: ε
+
+   89 value: FALSE $@14
+
+   90 $@15: ε
+
+   91 value: SCAN $@15 '(' ')'
+
+   92 $@16: ε
+
+   93 return: RETURN $@16 value ';'
+   94       | ε
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '(' (40) 17 19 22 28 64 67 91
+    ')' (41) 17 19 22 28 64 67 91
+    ',' (44) 9 29 64
+    ':' (58) 33 48
+    ';' (59) 5 6 7 8 20 22 93
+    '=' (61) 50 56 57
+    '{' (123) 5 6 17 19 28 38
+    '}' (125) 5 6 17 19 28 38
+    error (256)
+    IMPORT <treeNode> (258) 5 6 7 8
+    FROM <treeNode> (259) 5 6 7 8
+    AS <treeNode> (260) 6 8
+    CONSOLELOG <treeNode> (261) 22
+    SCAN <treeNode> (262) 91
+    IF <treeNode> (263) 19
+    WHILE <treeNode> (264) 17
+    ELSE <treeNode> (265) 38
+    RETURN <treeNode> (266) 93
+    ELIF <treeNode> (267)
+    LET <treeNode> (268) 53
+    VAR <treeNode> (269) 54
+    CONST <treeNode> (270) 55
+    ADD <treeNode> (271) 73
+    SUB <treeNode> (272) 74
+    MULT <treeNode> (273) 12 71
+    DIV <treeNode> (274) 72
+    LOG <treeNode> (275) 64
+    GE <treeNode> (276) 78
+    LE <treeNode> (277) 77
+    GT <treeNode> (278) 76
+    LT <treeNode> (279) 75
+    EQ <treeNode> (280) 79
+    NE <treeNode> (281) 80
+    TRUE <treeNode> (282) 44 87
+    FALSE <treeNode> (283) 46 89
+    AND <treeNode> (284) 68
+    OR <treeNode> (285) 69
+    NUMBERTYPE <treeNode> (286) 34
+    STRINGTYPE <treeNode> (287) 35
+    BOOLEANTYPE <treeNode> (288) 36
+    FUNCTION <treeNode> (289) 28
+    INTEGER <treeNode> (290) 81
+    FLOAT <treeNode> (291) 82
+    IDENTIFIER <treeNode> (292) 6 8 11 24 28 33 48 50 52 84
+    STRINGVALUE <treeNode> (293) 5 6 7 8 23 85
+    POW <treeNode2> (294) 70
+
+
+Nonterminals, with rules where they appear
+
+    $accept (48)
+        on left: 0
+    main <treeNode> (49)
+        on left: 1
+        on right: 0
+    importList <treeNode> (50)
+        on left: 2 3 4
+        on right: 1 2
+    imports <treeNode> (51)
+        on left: 5 6 7 8
+        on right: 2 3
+    moduleList <treeNode> (52)
+        on left: 9 10
+        on right: 5 7 9
+    modules <treeNode> (53)
+        on left: 11 12
+        on right: 6 8 10
+    body <treeNode> (54)
+        on left: 13 14
+        on right: 1 13 17 19 28 38
+    block <treeNode> (55)
+        on left: 15 17 19 20 22
+        on right: 13
+    $@1 (56)
+        on left: 16
+        on right: 17
+    $@2 (57)
+        on left: 18
+        on right: 19
+    $@3 (58)
+        on left: 21
+        on right: 22
+    console_outputs <treeNode> (59)
+        on left: 23 24 25
+        on right: 22
+    function <treeNode2> (60)
+        on left: 28
+        on right: 15
+    $@4 (61)
+        on left: 26
+        on right: 28
+    $@5 (62)
+        on left: 27
+        on right: 28
+    parameterList <treeNode> (63)
+        on left: 29 30 31
+        on right: 28 29
+    parameter <treeNode> (64)
+        on left: 33
+        on right: 29 30
+    $@6 (65)
+        on left: 32
+        on right: 33
+    datatype <treeNode> (66)
+        on left: 34 35 36
+        on right: 33 48
+    else <treeNode> (67)
+        on left: 38 39
+        on right: 19
+    $@7 (68)
+        on left: 37
+        on right: 38
+    condition <treeNode> (69)
+        on left: 40 41 42 44 46
+        on right: 17 19 40
+    $@8 (70)
+        on left: 43
+        on right: 44
+    $@9 (71)
+        on left: 45
+        on right: 46
+    statement <treeNode> (72)
+        on left: 48 50 52
+        on right: 20
+    $@10 (73)
+        on left: 47
+        on right: 48
+    $@11 (74)
+        on left: 49
+        on right: 50
+    $@12 (75)
+        on left: 51
+        on right: 52
+    declaration <treeNode> (76)
+        on left: 53 54 55
+        on right: 48
+    init <treeNode2> (77)
+        on left: 56 57 58
+        on right: 48
+    expression <treeNode2> (78)
+        on left: 59 60
+        on right: 25 50 52 57 59 67
+    term <treeNode2> (79)
+        on left: 61 62
+        on right: 59 60 61
+    factor <treeNode2> (80)
+        on left: 63 64 65
+        on right: 61 62
+    base <treeNode2> (81)
+        on left: 66 67
+        on right: 63 65
+    and_or <treeNode> (82)
+        on left: 68 69
+        on right: 40
+    exponent <treeNode2> (83)
+        on left: 70
+        on right: 63
+    mulops <treeNode> (84)
+        on left: 71 72
+        on right: 61
+    addops <treeNode> (85)
+        on left: 73 74
+        on right: 59
+    relop <treeNode> (86)
+        on left: 75 76 77 78 79 80
+        on right: 41 52
+    number <treeNode2> (87)
+        on left: 81 82
+        on right: 83
+    value <treeNode2> (88)
+        on left: 83 84 85 87 89 91
+        on right: 41 42 56 64 66 93
+    $@13 (89)
+        on left: 86
+        on right: 87
+    $@14 (90)
+        on left: 88
+        on right: 89
+    $@15 (91)
+        on left: 90
+        on right: 91
+    return <treeNode> (92)
+        on left: 93 94
+        on right: 28
+    $@16 (93)
+        on left: 92
+        on right: 93
+
+
+State 0
+
+    0 $accept: • main $end
+
+    IMPORT  shift, and go to state 1
+
+    $default  reduce using rule 4 (importList)
+
+    main        go to state 2
+    importList  go to state 3
+    imports     go to state 4
+
+
+State 1
+
+    5 imports: IMPORT • '{' moduleList '}' FROM STRINGVALUE ';'
+    6        | IMPORT • '{' modules '}' AS IDENTIFIER FROM STRINGVALUE ';'
+    7        | IMPORT • moduleList FROM STRINGVALUE ';'
+    8        | IMPORT • modules AS IDENTIFIER FROM STRINGVALUE ';'
+
+    MULT        shift, and go to state 5
+    IDENTIFIER  shift, and go to state 6
+    '{'         shift, and go to state 7
+
+    moduleList  go to state 8
+    modules     go to state 9
+
+
+State 2
+
+    0 $accept: main • $end
+
+    $end  shift, and go to state 10
+
+
+State 3
+
+    1 main: importList • body
+
+    CONSOLELOG  shift, and go to state 11
+    IF          shift, and go to state 12
+    WHILE       shift, and go to state 13
+    LET         shift, and go to state 14
+    VAR         shift, and go to state 15
+    CONST       shift, and go to state 16
+    FUNCTION    shift, and go to state 17
+    IDENTIFIER  shift, and go to state 18
+
+    $default  reduce using rule 14 (body)
+
+    body         go to state 19
+    block        go to state 20
+    function     go to state 21
+    statement    go to state 22
+    declaration  go to state 23
+
+
+State 4
+
+    2 importList: imports • importList
+    3           | imports •
+
+    IMPORT  shift, and go to state 1
+
+    $end        reduce using rule 3 (importList)
+    $end        [reduce using rule 4 (importList)]
+    CONSOLELOG  reduce using rule 3 (importList)
+    CONSOLELOG  [reduce using rule 4 (importList)]
+    IF          reduce using rule 3 (importList)
+    IF          [reduce using rule 4 (importList)]
+    WHILE       reduce using rule 3 (importList)
+    WHILE       [reduce using rule 4 (importList)]
+    LET         reduce using rule 3 (importList)
+    LET         [reduce using rule 4 (importList)]
+    VAR         reduce using rule 3 (importList)
+    VAR         [reduce using rule 4 (importList)]
+    CONST       reduce using rule 3 (importList)
+    CONST       [reduce using rule 4 (importList)]
+    FUNCTION    reduce using rule 3 (importList)
+    FUNCTION    [reduce using rule 4 (importList)]
+    IDENTIFIER  reduce using rule 3 (importList)
+    IDENTIFIER  [reduce using rule 4 (importList)]
+    $default    reduce using rule 3 (importList)
+
+    importList  go to state 24
+    imports     go to state 4
+
+
+State 5
+
+   12 modules: MULT •
+
+    $default  reduce using rule 12 (modules)
+
+
+State 6
+
+   11 modules: IDENTIFIER •
+
+    $default  reduce using rule 11 (modules)
+
+
+State 7
+
+    5 imports: IMPORT '{' • moduleList '}' FROM STRINGVALUE ';'
+    6        | IMPORT '{' • modules '}' AS IDENTIFIER FROM STRINGVALUE ';'
+
+    MULT        shift, and go to state 5
+    IDENTIFIER  shift, and go to state 6
+
+    moduleList  go to state 25
+    modules     go to state 26
+
+
+State 8
+
+    7 imports: IMPORT moduleList • FROM STRINGVALUE ';'
+    9 moduleList: moduleList • ',' moduleList
+
+    FROM  shift, and go to state 27
+    ','   shift, and go to state 28
+
+
+State 9
+
+    8 imports: IMPORT modules • AS IDENTIFIER FROM STRINGVALUE ';'
+   10 moduleList: modules •
+
+    AS  shift, and go to state 29
+
+    $default  reduce using rule 10 (moduleList)
+
+
+State 10
+
+    0 $accept: main $end •
+
+    $default  accept
+
+
+State 11
+
+   22 block: CONSOLELOG • $@3 '(' console_outputs ')' ';'
+
+    $default  reduce using rule 21 ($@3)
+
+    $@3  go to state 30
+
+
+State 12
+
+   19 block: IF • $@2 '(' condition ')' '{' body '}' else
+
+    $default  reduce using rule 18 ($@2)
+
+    $@2  go to state 31
+
+
+State 13
+
+   17 block: WHILE • $@1 '(' condition ')' '{' body '}'
+
+    $default  reduce using rule 16 ($@1)
+
+    $@1  go to state 32
+
+
+State 14
+
+   53 declaration: LET •
+
+    $default  reduce using rule 53 (declaration)
+
+
+State 15
+
+   54 declaration: VAR •
+
+    $default  reduce using rule 54 (declaration)
+
+
+State 16
+
+   55 declaration: CONST •
+
+    $default  reduce using rule 55 (declaration)
+
+
+State 17
+
+   28 function: FUNCTION • $@4 IDENTIFIER $@5 '(' parameterList ')' '{' body return '}'
+
+    $default  reduce using rule 26 ($@4)
+
+    $@4  go to state 33
+
+
+State 18
+
+   50 statement: IDENTIFIER • $@11 '=' expression
+   52          | IDENTIFIER • $@12 relop expression
+
+    '='       reduce using rule 49 ($@11)
+    $default  reduce using rule 51 ($@12)
+
+    $@11  go to state 34
+    $@12  go to state 35
+
+
+State 19
+
+    1 main: importList body •
+
+    $default  reduce using rule 1 (main)
+
+
+State 20
+
+   13 body: block • body
+
+    CONSOLELOG  shift, and go to state 11
+    IF          shift, and go to state 12
+    WHILE       shift, and go to state 13
+    LET         shift, and go to state 14
+    VAR         shift, and go to state 15
+    CONST       shift, and go to state 16
+    FUNCTION    shift, and go to state 17
+    IDENTIFIER  shift, and go to state 18
+
+    $default  reduce using rule 14 (body)
+
+    body         go to state 36
+    block        go to state 20
+    function     go to state 21
+    statement    go to state 22
+    declaration  go to state 23
+
+
+State 21
+
+   15 block: function •
+
+    $default  reduce using rule 15 (block)
+
+
+State 22
+
+   20 block: statement • ';'
+
+    ';'  shift, and go to state 37
+
+
+State 23
+
+   48 statement: declaration • IDENTIFIER $@10 ':' datatype init
+
+    IDENTIFIER  shift, and go to state 38
+
+
+State 24
+
+    2 importList: imports importList •
+
+    $default  reduce using rule 2 (importList)
+
+
+State 25
+
+    5 imports: IMPORT '{' moduleList • '}' FROM STRINGVALUE ';'
+    9 moduleList: moduleList • ',' moduleList
+
+    '}'  shift, and go to state 39
+    ','  shift, and go to state 28
+
+
+State 26
+
+    6 imports: IMPORT '{' modules • '}' AS IDENTIFIER FROM STRINGVALUE ';'
+   10 moduleList: modules •
+
+    '}'  shift, and go to state 40
+
+    '}'       [reduce using rule 10 (moduleList)]
+    $default  reduce using rule 10 (moduleList)
+
+
+State 27
+
+    7 imports: IMPORT moduleList FROM • STRINGVALUE ';'
+
+    STRINGVALUE  shift, and go to state 41
+
+
+State 28
+
+    9 moduleList: moduleList ',' • moduleList
+
+    MULT        shift, and go to state 5
+    IDENTIFIER  shift, and go to state 6
+
+    moduleList  go to state 42
+    modules     go to state 43
+
+
+State 29
+
+    8 imports: IMPORT modules AS • IDENTIFIER FROM STRINGVALUE ';'
+
+    IDENTIFIER  shift, and go to state 44
+
+
+State 30
+
+   22 block: CONSOLELOG $@3 • '(' console_outputs ')' ';'
+
+    '('  shift, and go to state 45
+
+
+State 31
+
+   19 block: IF $@2 • '(' condition ')' '{' body '}' else
+
+    '('  shift, and go to state 46
+
+
+State 32
+
+   17 block: WHILE $@1 • '(' condition ')' '{' body '}'
+
+    '('  shift, and go to state 47
+
+
+State 33
+
+   28 function: FUNCTION $@4 • IDENTIFIER $@5 '(' parameterList ')' '{' body return '}'
+
+    IDENTIFIER  shift, and go to state 48
+
+
+State 34
+
+   50 statement: IDENTIFIER $@11 • '=' expression
+
+    '='  shift, and go to state 49
+
+
+State 35
+
+   52 statement: IDENTIFIER $@12 • relop expression
+
+    GE  shift, and go to state 50
+    LE  shift, and go to state 51
+    GT  shift, and go to state 52
+    LT  shift, and go to state 53
+    EQ  shift, and go to state 54
+    NE  shift, and go to state 55
+
+    relop  go to state 56
+
+
+State 36
+
+   13 body: block body •
+
+    $default  reduce using rule 13 (body)
+
+
+State 37
+
+   20 block: statement ';' •
+
+    $default  reduce using rule 20 (block)
+
+
+State 38
+
+   48 statement: declaration IDENTIFIER • $@10 ':' datatype init
+
+    $default  reduce using rule 47 ($@10)
+
+    $@10  go to state 57
+
+
+State 39
+
+    5 imports: IMPORT '{' moduleList '}' • FROM STRINGVALUE ';'
+
+    FROM  shift, and go to state 58
+
+
+State 40
+
+    6 imports: IMPORT '{' modules '}' • AS IDENTIFIER FROM STRINGVALUE ';'
+
+    AS  shift, and go to state 59
+
+
+State 41
+
+    7 imports: IMPORT moduleList FROM STRINGVALUE • ';'
+
+    ';'  shift, and go to state 60
+
+
+State 42
+
+    9 moduleList: moduleList • ',' moduleList
+    9           | moduleList ',' moduleList •
+
+    ','  shift, and go to state 28
+
+    ','       [reduce using rule 9 (moduleList)]
+    $default  reduce using rule 9 (moduleList)
+
+
+State 43
+
+   10 moduleList: modules •
+
+    $default  reduce using rule 10 (moduleList)
+
+
+State 44
+
+    8 imports: IMPORT modules AS IDENTIFIER • FROM STRINGVALUE ';'
+
+    FROM  shift, and go to state 61
+
+
+State 45
+
+   22 block: CONSOLELOG $@3 '(' • console_outputs ')' ';'
+
+    SCAN         shift, and go to state 62
+    LOG          shift, and go to state 63
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 68
+    STRINGVALUE  shift, and go to state 69
+    '('          shift, and go to state 70
+
+    console_outputs  go to state 71
+    expression       go to state 72
+    term             go to state 73
+    factor           go to state 74
+    base             go to state 75
+    number           go to state 76
+    value            go to state 77
+
+
+State 46
+
+   19 block: IF $@2 '(' • condition ')' '{' body '}' else
+
+    SCAN         shift, and go to state 62
+    TRUE         shift, and go to state 78
+    FALSE        shift, and go to state 79
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+
+    condition  go to state 82
+    number     go to state 76
+    value      go to state 83
+
+
+State 47
+
+   17 block: WHILE $@1 '(' • condition ')' '{' body '}'
+
+    SCAN         shift, and go to state 62
+    TRUE         shift, and go to state 78
+    FALSE        shift, and go to state 79
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+
+    condition  go to state 84
+    number     go to state 76
+    value      go to state 83
+
+
+State 48
+
+   28 function: FUNCTION $@4 IDENTIFIER • $@5 '(' parameterList ')' '{' body return '}'
+
+    $default  reduce using rule 27 ($@5)
+
+    $@5  go to state 85
+
+
+State 49
+
+   50 statement: IDENTIFIER $@11 '=' • expression
+
+    SCAN         shift, and go to state 62
+    LOG          shift, and go to state 63
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+    '('          shift, and go to state 70
+
+    expression  go to state 86
+    term        go to state 73
+    factor      go to state 74
+    base        go to state 75
+    number      go to state 76
+    value       go to state 77
+
+
+State 50
+
+   78 relop: GE •
+
+    $default  reduce using rule 78 (relop)
+
+
+State 51
+
+   77 relop: LE •
+
+    $default  reduce using rule 77 (relop)
+
+
+State 52
+
+   76 relop: GT •
+
+    $default  reduce using rule 76 (relop)
+
+
+State 53
+
+   75 relop: LT •
+
+    $default  reduce using rule 75 (relop)
+
+
+State 54
+
+   79 relop: EQ •
+
+    $default  reduce using rule 79 (relop)
+
+
+State 55
+
+   80 relop: NE •
+
+    $default  reduce using rule 80 (relop)
+
+
+State 56
+
+   52 statement: IDENTIFIER $@12 relop • expression
+
+    SCAN         shift, and go to state 62
+    LOG          shift, and go to state 63
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+    '('          shift, and go to state 70
+
+    expression  go to state 87
+    term        go to state 73
+    factor      go to state 74
+    base        go to state 75
+    number      go to state 76
+    value       go to state 77
+
+
+State 57
+
+   48 statement: declaration IDENTIFIER $@10 • ':' datatype init
+
+    ':'  shift, and go to state 88
+
+
+State 58
+
+    5 imports: IMPORT '{' moduleList '}' FROM • STRINGVALUE ';'
+
+    STRINGVALUE  shift, and go to state 89
+
+
+State 59
+
+    6 imports: IMPORT '{' modules '}' AS • IDENTIFIER FROM STRINGVALUE ';'
+
+    IDENTIFIER  shift, and go to state 90
+
+
+State 60
+
+    7 imports: IMPORT moduleList FROM STRINGVALUE ';' •
+
+    $default  reduce using rule 7 (imports)
+
+
+State 61
+
+    8 imports: IMPORT modules AS IDENTIFIER FROM • STRINGVALUE ';'
+
+    STRINGVALUE  shift, and go to state 91
+
+
+State 62
+
+   91 value: SCAN • $@15 '(' ')'
+
+    $default  reduce using rule 90 ($@15)
+
+    $@15  go to state 92
+
+
+State 63
+
+   64 factor: LOG • '(' value ',' value ')'
+
+    '('  shift, and go to state 93
+
+
+State 64
+
+   87 value: TRUE • $@13
+
+    $default  reduce using rule 86 ($@13)
+
+    $@13  go to state 94
+
+
+State 65
+
+   89 value: FALSE • $@14
+
+    $default  reduce using rule 88 ($@14)
+
+    $@14  go to state 95
+
+
+State 66
+
+   81 number: INTEGER •
+
+    $default  reduce using rule 81 (number)
+
+
+State 67
+
+   82 number: FLOAT •
+
+    $default  reduce using rule 82 (number)
+
+
+State 68
+
+   24 console_outputs: IDENTIFIER •
+   84 value: IDENTIFIER •
+
+    ')'       reduce using rule 24 (console_outputs)
+    ')'       [reduce using rule 84 (value)]
+    $default  reduce using rule 84 (value)
+
+
+State 69
+
+   23 console_outputs: STRINGVALUE •
+   85 value: STRINGVALUE •
+
+    ')'       reduce using rule 23 (console_outputs)
+    ')'       [reduce using rule 85 (value)]
+    $default  reduce using rule 85 (value)
+
+
+State 70
+
+   67 base: '(' • expression ')'
+
+    SCAN         shift, and go to state 62
+    LOG          shift, and go to state 63
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+    '('          shift, and go to state 70
+
+    expression  go to state 96
+    term        go to state 73
+    factor      go to state 74
+    base        go to state 75
+    number      go to state 76
+    value       go to state 77
+
+
+State 71
+
+   22 block: CONSOLELOG $@3 '(' console_outputs • ')' ';'
+
+    ')'  shift, and go to state 97
+
+
+State 72
+
+   25 console_outputs: expression •
+   59 expression: expression • addops term
+
+    ADD  shift, and go to state 98
+    SUB  shift, and go to state 99
+
+    $default  reduce using rule 25 (console_outputs)
+
+    addops  go to state 100
+
+
+State 73
+
+   60 expression: term •
+   61 term: term • mulops factor
+
+    MULT  shift, and go to state 101
+    DIV   shift, and go to state 102
+
+    $default  reduce using rule 60 (expression)
+
+    mulops  go to state 103
+
+
+State 74
+
+   62 term: factor •
+
+    $default  reduce using rule 62 (term)
+
+
+State 75
+
+   63 factor: base • exponent base
+   65       | base •
+
+    POW  shift, and go to state 104
+
+    $default  reduce using rule 65 (factor)
+
+    exponent  go to state 105
+
+
+State 76
+
+   83 value: number •
+
+    $default  reduce using rule 83 (value)
+
+
+State 77
+
+   66 base: value •
+
+    $default  reduce using rule 66 (base)
+
+
+State 78
+
+   44 condition: TRUE • $@8
+   87 value: TRUE • $@13
+
+    AND       reduce using rule 43 ($@8)
+    AND       [reduce using rule 86 ($@13)]
+    OR        reduce using rule 43 ($@8)
+    OR        [reduce using rule 86 ($@13)]
+    ')'       reduce using rule 43 ($@8)
+    ')'       [reduce using rule 86 ($@13)]
+    $default  reduce using rule 86 ($@13)
+
+    $@8   go to state 106
+    $@13  go to state 94
+
+
+State 79
+
+   46 condition: FALSE • $@9
+   89 value: FALSE • $@14
+
+    AND       reduce using rule 45 ($@9)
+    AND       [reduce using rule 88 ($@14)]
+    OR        reduce using rule 45 ($@9)
+    OR        [reduce using rule 88 ($@14)]
+    ')'       reduce using rule 45 ($@9)
+    ')'       [reduce using rule 88 ($@14)]
+    $default  reduce using rule 88 ($@14)
+
+    $@9   go to state 107
+    $@14  go to state 95
+
+
+State 80
+
+   84 value: IDENTIFIER •
+
+    $default  reduce using rule 84 (value)
+
+
+State 81
+
+   85 value: STRINGVALUE •
+
+    $default  reduce using rule 85 (value)
+
+
+State 82
+
+   19 block: IF $@2 '(' condition • ')' '{' body '}' else
+   40 condition: condition • and_or condition
+
+    AND  shift, and go to state 108
+    OR   shift, and go to state 109
+    ')'  shift, and go to state 110
+
+    and_or  go to state 111
+
+
+State 83
+
+   41 condition: value • relop value
+   42          | value •
+
+    GE  shift, and go to state 50
+    LE  shift, and go to state 51
+    GT  shift, and go to state 52
+    LT  shift, and go to state 53
+    EQ  shift, and go to state 54
+    NE  shift, and go to state 55
+
+    $default  reduce using rule 42 (condition)
+
+    relop  go to state 112
+
+
+State 84
+
+   17 block: WHILE $@1 '(' condition • ')' '{' body '}'
+   40 condition: condition • and_or condition
+
+    AND  shift, and go to state 108
+    OR   shift, and go to state 109
+    ')'  shift, and go to state 113
+
+    and_or  go to state 111
+
+
+State 85
+
+   28 function: FUNCTION $@4 IDENTIFIER $@5 • '(' parameterList ')' '{' body return '}'
+
+    '('  shift, and go to state 114
+
+
+State 86
+
+   50 statement: IDENTIFIER $@11 '=' expression •
+   59 expression: expression • addops term
+
+    ADD  shift, and go to state 98
+    SUB  shift, and go to state 99
+
+    $default  reduce using rule 50 (statement)
+
+    addops  go to state 100
+
+
+State 87
+
+   52 statement: IDENTIFIER $@12 relop expression •
+   59 expression: expression • addops term
+
+    ADD  shift, and go to state 98
+    SUB  shift, and go to state 99
+
+    $default  reduce using rule 52 (statement)
+
+    addops  go to state 100
+
+
+State 88
+
+   48 statement: declaration IDENTIFIER $@10 ':' • datatype init
+
+    NUMBERTYPE   shift, and go to state 115
+    STRINGTYPE   shift, and go to state 116
+    BOOLEANTYPE  shift, and go to state 117
+
+    datatype  go to state 118
+
+
+State 89
+
+    5 imports: IMPORT '{' moduleList '}' FROM STRINGVALUE • ';'
+
+    ';'  shift, and go to state 119
+
+
+State 90
+
+    6 imports: IMPORT '{' modules '}' AS IDENTIFIER • FROM STRINGVALUE ';'
+
+    FROM  shift, and go to state 120
+
+
+State 91
+
+    8 imports: IMPORT modules AS IDENTIFIER FROM STRINGVALUE • ';'
+
+    ';'  shift, and go to state 121
+
+
+State 92
+
+   91 value: SCAN $@15 • '(' ')'
+
+    '('  shift, and go to state 122
+
+
+State 93
+
+   64 factor: LOG '(' • value ',' value ')'
+
+    SCAN         shift, and go to state 62
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+
+    number  go to state 76
+    value   go to state 123
+
+
+State 94
+
+   87 value: TRUE $@13 •
+
+    $default  reduce using rule 87 (value)
+
+
+State 95
+
+   89 value: FALSE $@14 •
+
+    $default  reduce using rule 89 (value)
+
+
+State 96
+
+   59 expression: expression • addops term
+   67 base: '(' expression • ')'
+
+    ADD  shift, and go to state 98
+    SUB  shift, and go to state 99
+    ')'  shift, and go to state 124
+
+    addops  go to state 100
+
+
+State 97
+
+   22 block: CONSOLELOG $@3 '(' console_outputs ')' • ';'
+
+    ';'  shift, and go to state 125
+
+
+State 98
+
+   73 addops: ADD •
+
+    $default  reduce using rule 73 (addops)
+
+
+State 99
+
+   74 addops: SUB •
+
+    $default  reduce using rule 74 (addops)
+
+
+State 100
+
+   59 expression: expression addops • term
+
+    SCAN         shift, and go to state 62
+    LOG          shift, and go to state 63
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+    '('          shift, and go to state 70
+
+    term    go to state 126
+    factor  go to state 74
+    base    go to state 75
+    number  go to state 76
+    value   go to state 77
+
+
+State 101
+
+   71 mulops: MULT •
+
+    $default  reduce using rule 71 (mulops)
+
+
+State 102
+
+   72 mulops: DIV •
+
+    $default  reduce using rule 72 (mulops)
+
+
+State 103
+
+   61 term: term mulops • factor
+
+    SCAN         shift, and go to state 62
+    LOG          shift, and go to state 63
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+    '('          shift, and go to state 70
+
+    factor  go to state 127
+    base    go to state 75
+    number  go to state 76
+    value   go to state 77
+
+
+State 104
+
+   70 exponent: POW •
+
+    $default  reduce using rule 70 (exponent)
+
+
+State 105
+
+   63 factor: base exponent • base
+
+    SCAN         shift, and go to state 62
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+    '('          shift, and go to state 70
+
+    base    go to state 128
+    number  go to state 76
+    value   go to state 77
+
+
+State 106
+
+   44 condition: TRUE $@8 •
+
+    $default  reduce using rule 44 (condition)
+
+
+State 107
+
+   46 condition: FALSE $@9 •
+
+    $default  reduce using rule 46 (condition)
+
+
+State 108
+
+   68 and_or: AND •
+
+    $default  reduce using rule 68 (and_or)
+
+
+State 109
+
+   69 and_or: OR •
+
+    $default  reduce using rule 69 (and_or)
+
+
+State 110
+
+   19 block: IF $@2 '(' condition ')' • '{' body '}' else
+
+    '{'  shift, and go to state 129
+
+
+State 111
+
+   40 condition: condition and_or • condition
+
+    SCAN         shift, and go to state 62
+    TRUE         shift, and go to state 78
+    FALSE        shift, and go to state 79
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+
+    condition  go to state 130
+    number     go to state 76
+    value      go to state 83
+
+
+State 112
+
+   41 condition: value relop • value
+
+    SCAN         shift, and go to state 62
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+
+    number  go to state 76
+    value   go to state 131
+
+
+State 113
+
+   17 block: WHILE $@1 '(' condition ')' • '{' body '}'
+
+    '{'  shift, and go to state 132
+
+
+State 114
+
+   28 function: FUNCTION $@4 IDENTIFIER $@5 '(' • parameterList ')' '{' body return '}'
+
+    IDENTIFIER  shift, and go to state 133
+
+    $default  reduce using rule 31 (parameterList)
+
+    parameterList  go to state 134
+    parameter      go to state 135
+
+
+State 115
+
+   34 datatype: NUMBERTYPE •
+
+    $default  reduce using rule 34 (datatype)
+
+
+State 116
+
+   35 datatype: STRINGTYPE •
+
+    $default  reduce using rule 35 (datatype)
+
+
+State 117
+
+   36 datatype: BOOLEANTYPE •
+
+    $default  reduce using rule 36 (datatype)
+
+
+State 118
+
+   48 statement: declaration IDENTIFIER $@10 ':' datatype • init
+
+    '='  shift, and go to state 136
+
+    $default  reduce using rule 58 (init)
+
+    init  go to state 137
+
+
+State 119
+
+    5 imports: IMPORT '{' moduleList '}' FROM STRINGVALUE ';' •
+
+    $default  reduce using rule 5 (imports)
+
+
+State 120
+
+    6 imports: IMPORT '{' modules '}' AS IDENTIFIER FROM • STRINGVALUE ';'
+
+    STRINGVALUE  shift, and go to state 138
+
+
+State 121
+
+    8 imports: IMPORT modules AS IDENTIFIER FROM STRINGVALUE ';' •
+
+    $default  reduce using rule 8 (imports)
+
+
+State 122
+
+   91 value: SCAN $@15 '(' • ')'
+
+    ')'  shift, and go to state 139
+
+
+State 123
+
+   64 factor: LOG '(' value • ',' value ')'
+
+    ','  shift, and go to state 140
+
+
+State 124
+
+   67 base: '(' expression ')' •
+
+    $default  reduce using rule 67 (base)
+
+
+State 125
+
+   22 block: CONSOLELOG $@3 '(' console_outputs ')' ';' •
+
+    $default  reduce using rule 22 (block)
+
+
+State 126
+
+   59 expression: expression addops term •
+   61 term: term • mulops factor
+
+    MULT  shift, and go to state 101
+    DIV   shift, and go to state 102
+
+    $default  reduce using rule 59 (expression)
+
+    mulops  go to state 103
+
+
+State 127
+
+   61 term: term mulops factor •
+
+    $default  reduce using rule 61 (term)
+
+
+State 128
+
+   63 factor: base exponent base •
+
+    $default  reduce using rule 63 (factor)
+
+
+State 129
+
+   19 block: IF $@2 '(' condition ')' '{' • body '}' else
+
+    CONSOLELOG  shift, and go to state 11
+    IF          shift, and go to state 12
+    WHILE       shift, and go to state 13
+    LET         shift, and go to state 14
+    VAR         shift, and go to state 15
+    CONST       shift, and go to state 16
+    FUNCTION    shift, and go to state 17
+    IDENTIFIER  shift, and go to state 18
+
+    $default  reduce using rule 14 (body)
+
+    body         go to state 141
+    block        go to state 20
+    function     go to state 21
+    statement    go to state 22
+    declaration  go to state 23
+
+
+State 130
+
+   40 condition: condition • and_or condition
+   40          | condition and_or condition •
+
+    AND  shift, and go to state 108
+    OR   shift, and go to state 109
+
+    AND       [reduce using rule 40 (condition)]
+    OR        [reduce using rule 40 (condition)]
+    $default  reduce using rule 40 (condition)
+
+    and_or  go to state 111
+
+
+State 131
+
+   41 condition: value relop value •
+
+    $default  reduce using rule 41 (condition)
+
+
+State 132
+
+   17 block: WHILE $@1 '(' condition ')' '{' • body '}'
+
+    CONSOLELOG  shift, and go to state 11
+    IF          shift, and go to state 12
+    WHILE       shift, and go to state 13
+    LET         shift, and go to state 14
+    VAR         shift, and go to state 15
+    CONST       shift, and go to state 16
+    FUNCTION    shift, and go to state 17
+    IDENTIFIER  shift, and go to state 18
+
+    $default  reduce using rule 14 (body)
+
+    body         go to state 142
+    block        go to state 20
+    function     go to state 21
+    statement    go to state 22
+    declaration  go to state 23
+
+
+State 133
+
+   33 parameter: IDENTIFIER • $@6 ':' datatype
+
+    $default  reduce using rule 32 ($@6)
+
+    $@6  go to state 143
+
+
+State 134
+
+   28 function: FUNCTION $@4 IDENTIFIER $@5 '(' parameterList • ')' '{' body return '}'
+
+    ')'  shift, and go to state 144
+
+
+State 135
+
+   29 parameterList: parameter • ',' parameterList
+   30              | parameter •
+
+    ','  shift, and go to state 145
+
+    $default  reduce using rule 30 (parameterList)
+
+
+State 136
+
+   56 init: '=' • value
+   57     | '=' • expression
+
+    SCAN         shift, and go to state 62
+    LOG          shift, and go to state 63
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+    '('          shift, and go to state 70
+
+    expression  go to state 146
+    term        go to state 73
+    factor      go to state 74
+    base        go to state 75
+    number      go to state 76
+    value       go to state 147
+
+
+State 137
+
+   48 statement: declaration IDENTIFIER $@10 ':' datatype init •
+
+    $default  reduce using rule 48 (statement)
+
+
+State 138
+
+    6 imports: IMPORT '{' modules '}' AS IDENTIFIER FROM STRINGVALUE • ';'
+
+    ';'  shift, and go to state 148
+
+
+State 139
+
+   91 value: SCAN $@15 '(' ')' •
+
+    $default  reduce using rule 91 (value)
+
+
+State 140
+
+   64 factor: LOG '(' value ',' • value ')'
+
+    SCAN         shift, and go to state 62
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+
+    number  go to state 76
+    value   go to state 149
+
+
+State 141
+
+   19 block: IF $@2 '(' condition ')' '{' body • '}' else
+
+    '}'  shift, and go to state 150
+
+
+State 142
+
+   17 block: WHILE $@1 '(' condition ')' '{' body • '}'
+
+    '}'  shift, and go to state 151
+
+
+State 143
+
+   33 parameter: IDENTIFIER $@6 • ':' datatype
+
+    ':'  shift, and go to state 152
+
+
+State 144
+
+   28 function: FUNCTION $@4 IDENTIFIER $@5 '(' parameterList ')' • '{' body return '}'
+
+    '{'  shift, and go to state 153
+
+
+State 145
+
+   29 parameterList: parameter ',' • parameterList
+
+    IDENTIFIER  shift, and go to state 133
+
+    $default  reduce using rule 31 (parameterList)
+
+    parameterList  go to state 154
+    parameter      go to state 135
+
+
+State 146
+
+   57 init: '=' expression •
+   59 expression: expression • addops term
+
+    ADD  shift, and go to state 98
+    SUB  shift, and go to state 99
+
+    $default  reduce using rule 57 (init)
+
+    addops  go to state 100
+
+
+State 147
+
+   56 init: '=' value •
+   66 base: value •
+
+    ';'       reduce using rule 56 (init)
+    ';'       [reduce using rule 66 (base)]
+    $default  reduce using rule 66 (base)
+
+
+State 148
+
+    6 imports: IMPORT '{' modules '}' AS IDENTIFIER FROM STRINGVALUE ';' •
+
+    $default  reduce using rule 6 (imports)
+
+
+State 149
+
+   64 factor: LOG '(' value ',' value • ')'
+
+    ')'  shift, and go to state 155
+
+
+State 150
+
+   19 block: IF $@2 '(' condition ')' '{' body '}' • else
+
+    ELSE  shift, and go to state 156
+
+    $default  reduce using rule 39 (else)
+
+    else  go to state 157
+
+
+State 151
+
+   17 block: WHILE $@1 '(' condition ')' '{' body '}' •
+
+    $default  reduce using rule 17 (block)
+
+
+State 152
+
+   33 parameter: IDENTIFIER $@6 ':' • datatype
+
+    NUMBERTYPE   shift, and go to state 115
+    STRINGTYPE   shift, and go to state 116
+    BOOLEANTYPE  shift, and go to state 117
+
+    datatype  go to state 158
+
+
+State 153
+
+   28 function: FUNCTION $@4 IDENTIFIER $@5 '(' parameterList ')' '{' • body return '}'
+
+    CONSOLELOG  shift, and go to state 11
+    IF          shift, and go to state 12
+    WHILE       shift, and go to state 13
+    LET         shift, and go to state 14
+    VAR         shift, and go to state 15
+    CONST       shift, and go to state 16
+    FUNCTION    shift, and go to state 17
+    IDENTIFIER  shift, and go to state 18
+
+    $default  reduce using rule 14 (body)
+
+    body         go to state 159
+    block        go to state 20
+    function     go to state 21
+    statement    go to state 22
+    declaration  go to state 23
+
+
+State 154
+
+   29 parameterList: parameter ',' parameterList •
+
+    $default  reduce using rule 29 (parameterList)
+
+
+State 155
+
+   64 factor: LOG '(' value ',' value ')' •
+
+    $default  reduce using rule 64 (factor)
+
+
+State 156
+
+   38 else: ELSE • $@7 '{' body '}'
+
+    $default  reduce using rule 37 ($@7)
+
+    $@7  go to state 160
+
+
+State 157
+
+   19 block: IF $@2 '(' condition ')' '{' body '}' else •
+
+    $default  reduce using rule 19 (block)
+
+
+State 158
+
+   33 parameter: IDENTIFIER $@6 ':' datatype •
+
+    $default  reduce using rule 33 (parameter)
+
+
+State 159
+
+   28 function: FUNCTION $@4 IDENTIFIER $@5 '(' parameterList ')' '{' body • return '}'
+
+    RETURN  shift, and go to state 161
+
+    $default  reduce using rule 94 (return)
+
+    return  go to state 162
+
+
+State 160
+
+   38 else: ELSE $@7 • '{' body '}'
+
+    '{'  shift, and go to state 163
+
+
+State 161
+
+   93 return: RETURN • $@16 value ';'
+
+    $default  reduce using rule 92 ($@16)
+
+    $@16  go to state 164
+
+
+State 162
+
+   28 function: FUNCTION $@4 IDENTIFIER $@5 '(' parameterList ')' '{' body return • '}'
+
+    '}'  shift, and go to state 165
+
+
+State 163
+
+   38 else: ELSE $@7 '{' • body '}'
+
+    CONSOLELOG  shift, and go to state 11
+    IF          shift, and go to state 12
+    WHILE       shift, and go to state 13
+    LET         shift, and go to state 14
+    VAR         shift, and go to state 15
+    CONST       shift, and go to state 16
+    FUNCTION    shift, and go to state 17
+    IDENTIFIER  shift, and go to state 18
+
+    $default  reduce using rule 14 (body)
+
+    body         go to state 166
+    block        go to state 20
+    function     go to state 21
+    statement    go to state 22
+    declaration  go to state 23
+
+
+State 164
+
+   93 return: RETURN $@16 • value ';'
+
+    SCAN         shift, and go to state 62
+    TRUE         shift, and go to state 64
+    FALSE        shift, and go to state 65
+    INTEGER      shift, and go to state 66
+    FLOAT        shift, and go to state 67
+    IDENTIFIER   shift, and go to state 80
+    STRINGVALUE  shift, and go to state 81
+
+    number  go to state 76
+    value   go to state 167
+
+
+State 165
+
+   28 function: FUNCTION $@4 IDENTIFIER $@5 '(' parameterList ')' '{' body return '}' •
+
+    $default  reduce using rule 28 (function)
+
+
+State 166
+
+   38 else: ELSE $@7 '{' body • '}'
+
+    '}'  shift, and go to state 168
+
+
+State 167
+
+   93 return: RETURN $@16 value • ';'
+
+    ';'  shift, and go to state 169
+
+
+State 168
+
+   38 else: ELSE $@7 '{' body '}' •
+
+    $default  reduce using rule 38 (else)
+
+
+State 169
+
+   93 return: RETURN $@16 value ';' •
+
+    $default  reduce using rule 93 (return)
