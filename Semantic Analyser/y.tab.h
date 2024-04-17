@@ -88,9 +88,9 @@ extern int yydebug;
     FUNCTION = 289,                /* FUNCTION  */
     INTEGER = 290,                 /* INTEGER  */
     FLOAT = 291,                   /* FLOAT  */
-    IDENTIFIER = 292,              /* IDENTIFIER  */
-    STRINGVALUE = 293,             /* STRINGVALUE  */
-    POW = 294                      /* POW  */
+    STRINGVALUE = 292,             /* STRINGVALUE  */
+    POW = 293,                     /* POW  */
+    IDENTIFIER = 294               /* IDENTIFIER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -133,15 +133,15 @@ extern int yydebug;
 #define FUNCTION 289
 #define INTEGER 290
 #define FLOAT 291
-#define IDENTIFIER 292
-#define STRINGVALUE 293
-#define POW 294
+#define STRINGVALUE 292
+#define POW 293
+#define IDENTIFIER 294
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 64 "parser.y"
+#line 66 "parser.y"
  
 	struct var_name { 
 		char name[100]; 

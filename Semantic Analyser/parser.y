@@ -33,6 +33,7 @@
     } symbol_table[100];
 
     char type[100]; // Added declaration for type
+	char id_name[100];
     int count = 0; // Added declaration for count
     int q; // Added declaration for q
     int sem_errors = 0;
@@ -42,6 +43,7 @@
     char reserved[10][20] = {"number", "import", "async", "string", "void", "if", "else", "for", "while", "return"};
     
     void insert_type();
+	void store_name();
     void add(char c);
     int search(char *);
 
@@ -74,8 +76,8 @@
     } treeNode2;
 }
 
-%token <treeNode>  IMPORT FROM AS CONSOLELOG SCAN IF WHILE ELSE RETURN ELIF LET VAR CONST ADD SUB MULT DIV LOG GE LE GT LT EQ NE TRUE FALSE AND OR NUMBERTYPE STRINGTYPE BOOLEANTYPE FUNCTION INTEGER FLOAT IDENTIFIER STRINGVALUE
-%token <treeNode2> POW 
+%token <treeNode>  IMPORT FROM AS CONSOLELOG SCAN IF WHILE ELSE RETURN ELIF LET VAR CONST ADD SUB MULT DIV LOG GE LE GT LT EQ NE TRUE FALSE AND OR NUMBERTYPE STRINGTYPE BOOLEANTYPE FUNCTION INTEGER FLOAT STRINGVALUE
+%token <treeNode2> POW IDENTIFIER
 %type  <treeNode>  main importList imports moduleList modules parameter parameterList datatype body block console_outputs else condition statement declaration mulops addops relop return and_or 
 %type  <treeNode2> init expression value number term factor base exponent function
 %define parse.error verbose 
@@ -117,7 +119,7 @@ block: function { $$.nd = $1.nd; }
 
 console_outputs: STRINGVALUE { add('C');}
                | IDENTIFIER  { check_declaration($1.name);}
-               | expression
+               | expression  { $$.nd = $1.nd; }
                ;
 
 
@@ -129,7 +131,7 @@ parameterList: parameter ',' parameterList { $$.nd = mknode($1.nd, $3.nd, "Param
 | { $$.nd = $$.nd = mknode(NULL, NULL, "Parameter"); }
 ;
 
-parameter: IDENTIFIER { add('I');} ':' datatype {$4.nd = mknode(NULL, NULL, $4.name); $1.nd = mknode(NULL, NULL, $1.name); $$.nd = mknode($4.nd, $1.nd, "Parameter");}
+parameter: IDENTIFIER {store_name();} ':' datatype {add('I');} {$4.nd = mknode(NULL, NULL, $4.name); $1.nd = mknode(NULL, NULL, $1.name); $$.nd = mknode($4.nd, $1.nd, "Parameter");}
 ;
 
 
@@ -151,32 +153,87 @@ condition: condition and_or condition { $$.nd = mknode($1.nd, $3.nd, $2.name); }
 | FALSE { add('K');} {$$.nd = NULL; }
 ;
 
-statement: declaration IDENTIFIER { add('I');} ':' datatype init {
+statement: declaration IDENTIFIER { store_name(); } ':' datatype {add('I');} init {
     $5.nd = mknode(NULL, NULL, $5.name); //making for datatype
 	$2.nd = mknode(NULL, NULL, $2.name); //making for identifier
 	$1.nd = mknode($5.nd, $2.nd, $1.name); //making for the declaration
-	int t = check_types($5.name, $6.type); //here we're checking types
+	int t = check_types($5.name, $7.type); //here we're checking types
 	// printf("%s\n", $5.name);
 	// printf("%s\n", $6.type);
 	// printf("%d\n", t);
 	if(t>0) {
-		sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1);sem_errors++;
+		//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1);sem_errors++;
+		if(t == 1) {
+            sprintf(errors[sem_errors], "Line %d: Type Mismatch in Declaration: number and string\n", countn+1);
+			sem_errors++;
+        }
+		else if(t == 2) {
+            sprintf(errors[sem_errors], "Line %d: Type Mismatch in Declaration: string and number\n", countn+1);
+			sem_errors++;
+        }  
+		else if(t == 3) {
+            sprintf(errors[sem_errors], "Line %d: Type Mismatch in Declaration: number and boolean\n", countn+1);
+			sem_errors++;
+        }  
+		else if(t == 4) {
+            sprintf(errors[sem_errors], "Line %d: Type Mismatch in Declaration: boolean and number\n", countn+1);
+			sem_errors++;
+        }  
+		else if(t == 5) {
+            sprintf(errors[sem_errors], "Line %d: Type Mismatch in Declaration: boolean and string\n", countn+1);
+			sem_errors++;
+        }  
+		else if(t == 6) {
+            sprintf(errors[sem_errors], "Line %d: Type Mismatch in Declaration: string and boolean\n", countn+1);
+			sem_errors++;
+        }   
+		else {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Declaration\n", countn+1);
+			sem_errors++;
+		}
 	} 
 	else {
-		$$.nd = mknode($2.nd, $6.nd, "Initialisation");
+		$$.nd = mknode($2.nd, $7.nd, "Initialisation");
 		
 	}
 		
 	} 
-| IDENTIFIER {  } '=' expression { 
+| IDENTIFIER '=' expression { 
 	if(check_declaration($1.name)){
 		$1.nd = mknode(NULL, NULL, $1.name);  
 		char *id_type = get_type($1.name); 
-		if(strcmp(id_type, $4.type)) {
-			sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;	
+		if(strcmp(id_type, $3.type)) {
+			//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;	
+			int t =  check_types(id_type,$3.type); 
+			if(t>0) { 
+			if(t == 1) {
+				sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment: number and string\n", countn+1); 
+				sem_errors++;
+			}
+			else if(t == 2) {
+				sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment: string and number\n", countn+1); 
+				sem_errors++;
+			}  
+			else if(t == 3) {
+				sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment: number and boolean\n", countn+1); 
+				sem_errors++;
+			}  
+			else if(t == 4) {
+				 sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment: boolean and number\n", countn+1); 
+				 sem_errors++;
+			}  
+			else if(t == 5) {
+				sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment: boolean and string\n", countn+1); 
+				sem_errors++;
+			}  
+			else if(t == 6) {
+				sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment: string and boolean\n", countn+1); 
+				sem_errors++;
+			}   
+        }
 		}
 		else {
-			$$.nd = mknode($1.nd, $4.nd, "="); 
+			$$.nd = mknode($1.nd, $3.nd, "="); 
 		}
 	}
 	
@@ -197,9 +254,38 @@ init: '=' value { $$.nd = $2.nd; sprintf($$.type, "%s", $2.type); strcpy($$.name
 
 expression : expression addops term { 
 	if(strcmp($1.type, $3.type)){
-		sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;
+		//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;
+		if(!strcmp($1.type, "number") && !strcmp($3.type, "string")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number and string\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "string") && !strcmp($3.type, "number")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string and number\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "boolean") && !strcmp($3.type, "number")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean and number\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "boolean") && !strcmp($3.type, "string")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean and string\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "number") && !strcmp($3.type, "boolean")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number and boolean\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "string") && !strcmp($3.type, "boolean")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string and boolean\n", countn+1);
+			sem_errors++;
+		}
+		else{
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression.\n", countn+1);
+			sem_errors++;
+		}
 	} 
 	else {
+		sprintf($$.type, "%s", $1.type);
 		$$.nd = mknode($1.nd, $3.nd, $2.name);
 	}
 }
@@ -208,21 +294,78 @@ expression : expression addops term {
 
 term : term mulops factor { 
 	if(strcmp($1.type, $3.type)){
-		sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1);sem_errors++;
+		//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;
+		if(!strcmp($1.type, "number") && !strcmp($3.type, "string")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number and string\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "string") && !strcmp($3.type, "number")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string and number\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "boolean") && !strcmp($3.type, "number")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean and number\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "boolean") && !strcmp($3.type, "string")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean and string\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "number") && !strcmp($3.type, "boolean")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number and boolean\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "string") && !strcmp($3.type, "boolean")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string and boolean\n", countn+1);
+			sem_errors++;
+		}
+		else{
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression.\n", countn+1);
+			sem_errors++;
+		}
 	} 
 	else {
+		sprintf($$.type, "%s", $1.type);
 		$$.nd = mknode($1.nd, $3.nd, $2.name);
 	}
-
 	}
 | factor { strcpy($$.name, $1.name); sprintf($$.type, "%s", $1.type); $$.nd = $1.nd; }
 ; 
 
 factor : base exponent base { 
 	if(strcmp($1.type, $3.type)){
-		sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1);sem_errors++;
+		//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;
+		if(!strcmp($1.type, "number") && !strcmp($3.type, "string")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number + string\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "string") && !strcmp($3.type, "number")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string + number\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "boolean") && !strcmp($3.type, "number")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean + number\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "boolean") && !strcmp($3.type, "string")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean + string\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "number") && !strcmp($3.type, "boolean")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number + boolean\n", countn+1);
+			sem_errors++;
+		}
+		else if(!strcmp($1.type, "string") && !strcmp($3.type, "boolean")) {
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string + boolean\n", countn+1);
+			sem_errors++;
+		}
+		else{
+			sprintf(errors[sem_errors], "Line %d: Type mismatch in Expression.\n", countn+1);
+			sem_errors++;
+		}
 	} 
 	else {
+		sprintf($$.type, "%s", $1.type);
 		$$.nd = mknode($1.nd, $3.nd, $2.name);
 	}
 	}
@@ -257,8 +400,8 @@ relop: LT
 | NE
 ;
 
-number: INTEGER { strcpy($$.name, $1.name); sprintf($$.type, "%s", "number"); add('C'); $$.nd = mknode(NULL, NULL, $1.name); }
-| FLOAT { strcpy($$.name, $1.name); sprintf($$.type, "%s", "number"); add('C'); $$.nd = mknode(NULL, NULL, $1.name); }
+number: INTEGER { strcpy($$.name, $1.name); sprintf($$.type, "%s", "number"); add('N'); $$.nd = mknode(NULL, NULL, $1.name); }
+| FLOAT { strcpy($$.name, $1.name); sprintf($$.type, "%s", "number"); add('N'); $$.nd = mknode(NULL, NULL, $1.name); }
 ;
 
 value: number {$$.nd = mknode(NULL, NULL, $1.name);}
@@ -411,17 +554,17 @@ int check_types(char *type1, char *type2){
 	if(!strcmp(type1, type2))
 		return 0;
 	// both datatypes are different
-	if(!strcmp(type1, "int") && !strcmp(type2, "float"))
+	if(!strcmp(type1, "number") && !strcmp(type2, "string"))
 		return 1;
-	if(!strcmp(type1, "float") && !strcmp(type2, "int"))
+	if(!strcmp(type1, "string") && !strcmp(type2, "number"))
 		return 2;
-	if(!strcmp(type1, "int") && !strcmp(type2, "char"))
+	if(!strcmp(type1, "number") && !strcmp(type2, "boolean"))
 		return 3;
-	if(!strcmp(type1, "char") && !strcmp(type2, "int"))
+	if(!strcmp(type1, "boolean") && !strcmp(type2, "number"))
 		return 4;
-	if(!strcmp(type1, "float") && !strcmp(type2, "char"))
+	if(!strcmp(type1, "boolean") && !strcmp(type2, "string"))
 		return 5;
-	if(!strcmp(type1, "char") && !strcmp(type2, "float"))
+	if(!strcmp(type1, "string") && !strcmp(type2, "boolean"))
 		return 6;
 }
 
@@ -438,14 +581,17 @@ char *get_type(char *var){
 void add(char c) {
 	if(c == 'I'){
 		for(int i=0; i<10; i++){
-			if(!strcmp(reserved[i], strdup(yytext))){
-        		sprintf(errors[sem_errors], "Line %d: Variable name \"%s\" is a reserved keyword\n", countn+1, yytext);
+			if(!strcmp(reserved[i], strdup(id_name))){
+        		sprintf(errors[sem_errors], "Line %d: Variable name \"%s\" is a reserved keyword\n", countn+1, id_name);
 				sem_errors++;
 				return;
 			}
 		}
 	}
-    q=search(yytext);
+	char *qtext;
+	if(c =='I') qtext = id_name;
+	else qtext = yytext;
+    q=search(qtext);
 	if(!q) {
 		if(c == 'H') {
 			symbol_table[count].id_name=strdup(yytext);
@@ -462,7 +608,7 @@ void add(char c) {
 			count++;
 		}
 		else if(c == 'I') {
-			symbol_table[count].id_name=strdup(yytext);
+			symbol_table[count].id_name=strdup(id_name);
 			symbol_table[count].data_type=strdup(type);
 			symbol_table[count].line_no=countn;
 			symbol_table[count].type=strdup("Variable");
@@ -482,14 +628,25 @@ void add(char c) {
 			symbol_table[count].type=strdup("Function");
 			count++;
 		}
+		else if(c == 'N') {
+			symbol_table[count].id_name=strdup(yytext);
+			symbol_table[count].data_type=strdup("number");
+			symbol_table[count].line_no=countn;
+			symbol_table[count].type=strdup("NumberLiteral");
+			count++;
+		}
     }
     else if(c == 'I' && q) {
-        sprintf(errors[sem_errors], "Line %d: Multiple declarations of \"%s\" not allowed\n", countn+1, yytext);
+        sprintf(errors[sem_errors], "Line %d: Multiple declarations of \"%s\" not allowed\n", countn+1, id_name);
 		sem_errors++;
     }
 }
 
-
 void insert_type() {
 	strcpy(type, yytext);
+}
+
+void store_name() {
+	strcpy(id_name, yytext);
+	//printf("IDENTIFIER NAME: %s\n", id_name);
 }
