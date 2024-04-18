@@ -117,14 +117,16 @@
 
     int label = 0;
 	int ic_idx = 0;
+    int param_idx = 0;
 	int temp_var = 0;
-	int is_for = 0;
+	int is_loop = 0;
 
     char buff[400];
     char errors[10][100];
     char reserved[10][20] = {"number", "import", "async", "string", "void", "if", "else", "for", "while", "return"};
     char icg[50][100];
     char func_buff[200];
+    char func_params[20][200];
 
     void insert_type();
 	void store_name();
@@ -145,7 +147,7 @@
     
     extern int countn;
 
-#line 149 "y.tab.c"
+#line 151 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -282,7 +284,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 80 "parser.y"
+#line 82 "parser.y"
  
 	struct var_name { 
 		char name[100]; 
@@ -306,7 +308,7 @@ union YYSTYPE
         float value;
 	} treeNode3;
 
-#line 310 "y.tab.c"
+#line 312 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -815,17 +817,17 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   113,   113,   117,   118,   119,   123,   124,   125,   126,
-     130,   131,   135,   136,   140,   141,   145,   146,   146,   155,
-     155,   166,   166,   170,   166,   183,   184,   184,   188,   189,
-     190,   194,   194,   194,   203,   204,   205,   209,   209,   209,
-     213,   214,   215,   219,   219,   220,   224,   225,   241,   242,
-     242,   243,   243,   247,   247,   247,   295,   338,   376,   390,
-     402,   414,   429,   430,   431,   435,   436,   437,   441,   483,
-     487,   529,   533,   575,   576,   580,   581,   585,   586,   590,
-     594,   595,   599,   600,   604,   605,   606,   607,   608,   609,
-     613,   620,   630,   631,   643,   644,   644,   645,   645,   646,
-     646,   650,   650,   656
+       0,   115,   115,   119,   120,   121,   125,   126,   127,   128,
+     132,   133,   137,   138,   142,   143,   147,   148,   148,   157,
+     157,   168,   168,   172,   168,   185,   186,   186,   190,   191,
+     192,   196,   196,   196,   205,   206,   207,   211,   211,   211,
+     215,   216,   217,   221,   221,   222,   226,   227,   243,   244,
+     244,   245,   245,   249,   249,   249,   297,   340,   377,   389,
+     400,   411,   425,   426,   427,   431,   432,   433,   437,   479,
+     483,   525,   529,   571,   572,   576,   577,   581,   582,   586,
+     590,   591,   595,   596,   600,   601,   602,   603,   604,   605,
+     609,   616,   626,   627,   639,   640,   640,   641,   641,   642,
+     642,   646,   646,   652
 };
 #endif
 
@@ -1786,92 +1788,92 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* main: importList body  */
-#line 113 "parser.y"
+#line 115 "parser.y"
                       { (yyval.treeNode).nd = mknode((yyvsp[-1].treeNode).nd, (yyvsp[0].treeNode).nd, "Program", 0); head = (yyval.treeNode).nd; }
-#line 1792 "y.tab.c"
+#line 1794 "y.tab.c"
     break;
 
   case 3: /* importList: imports importList  */
-#line 117 "parser.y"
+#line 119 "parser.y"
                                { (yyval.treeNode).nd = mknode((yyvsp[-1].treeNode).nd, (yyvsp[0].treeNode).nd, "ImportList", 0); }
-#line 1798 "y.tab.c"
+#line 1800 "y.tab.c"
     break;
 
   case 4: /* importList: imports  */
-#line 118 "parser.y"
+#line 120 "parser.y"
           { (yyval.treeNode).nd = mknode(NULL, (yyvsp[0].treeNode).nd, "ImportList", 0); }
-#line 1804 "y.tab.c"
+#line 1806 "y.tab.c"
     break;
 
   case 5: /* importList: %empty  */
-#line 119 "parser.y"
+#line 121 "parser.y"
   { (yyval.treeNode).nd = mknode(NULL, NULL, "ImportList", 0); }
-#line 1810 "y.tab.c"
+#line 1812 "y.tab.c"
     break;
 
   case 6: /* imports: IMPORT '{' moduleList '}' FROM STRINGVALUE ';'  */
-#line 123 "parser.y"
+#line 125 "parser.y"
                                                         { (yyval.treeNode).nd = (yyvsp[-4].treeNode).nd; }
-#line 1816 "y.tab.c"
+#line 1818 "y.tab.c"
     break;
 
   case 7: /* imports: IMPORT '{' modules '}' AS IDENTIFIER FROM STRINGVALUE ';'  */
-#line 124 "parser.y"
+#line 126 "parser.y"
                                                             { (yyval.treeNode).nd = (yyvsp[-6].treeNode).nd; }
-#line 1822 "y.tab.c"
+#line 1824 "y.tab.c"
     break;
 
   case 8: /* imports: IMPORT moduleList FROM STRINGVALUE ';'  */
-#line 125 "parser.y"
+#line 127 "parser.y"
                                          { (yyval.treeNode).nd = (yyvsp[-3].treeNode).nd; }
-#line 1828 "y.tab.c"
+#line 1830 "y.tab.c"
     break;
 
   case 9: /* imports: IMPORT modules AS IDENTIFIER FROM STRINGVALUE ';'  */
-#line 126 "parser.y"
+#line 128 "parser.y"
                                                     { (yyval.treeNode).nd = (yyvsp[-5].treeNode).nd; }
-#line 1834 "y.tab.c"
+#line 1836 "y.tab.c"
     break;
 
   case 10: /* moduleList: moduleList ',' moduleList  */
-#line 130 "parser.y"
+#line 132 "parser.y"
                                       { (yyval.treeNode).nd = mknode((yyvsp[-2].treeNode).nd, (yyvsp[0].treeNode).nd, "ModuleList", 0); }
-#line 1840 "y.tab.c"
+#line 1842 "y.tab.c"
     break;
 
   case 11: /* moduleList: modules  */
-#line 131 "parser.y"
+#line 133 "parser.y"
           { (yyval.treeNode).nd = mknode(NULL, NULL, (yyvsp[0].treeNode).name, 0); }
-#line 1846 "y.tab.c"
+#line 1848 "y.tab.c"
     break;
 
   case 14: /* body: block body  */
-#line 140 "parser.y"
+#line 142 "parser.y"
                  {(yyval.treeNode).nd = mknode((yyvsp[-1].treeNode).nd, (yyvsp[0].treeNode).nd, "Scope", 0); }
-#line 1852 "y.tab.c"
+#line 1854 "y.tab.c"
     break;
 
   case 15: /* body: %empty  */
-#line 141 "parser.y"
+#line 143 "parser.y"
   { (yyval.treeNode).nd = mknode(NULL, NULL, "EndOfScope", 0); }
-#line 1858 "y.tab.c"
+#line 1860 "y.tab.c"
     break;
 
   case 16: /* block: function  */
-#line 145 "parser.y"
+#line 147 "parser.y"
                 { (yyval.treeNode).nd = (yyvsp[0].treeNode2).nd; }
-#line 1864 "y.tab.c"
+#line 1866 "y.tab.c"
     break;
 
   case 17: /* $@1: %empty  */
-#line 146 "parser.y"
-        { add('K'); is_for = 1;}
-#line 1870 "y.tab.c"
+#line 148 "parser.y"
+        { add('K'); is_loop = 1;}
+#line 1872 "y.tab.c"
     break;
 
   case 18: /* block: WHILE $@1 '(' condition ')' '{' body '}'  */
-#line 146 "parser.y"
-                                                               { 
+#line 148 "parser.y"
+                                                                { 
 	(yyval.treeNode).nd = mknode((yyvsp[-4].treeNode3).nd, (yyvsp[-1].treeNode).nd, (yyvsp[-7].treeNode).name, 0); 
 	sprintf(icg[ic_idx++], "%s", buff);
     sprintf(icg[ic_idx++], BOLDMAGENTA);
@@ -1880,18 +1882,18 @@ yyreduce:
 	sprintf(icg[ic_idx++], "\nLABEL %s:\n", (yyvsp[-4].treeNode3).else_body);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
-#line 1884 "y.tab.c"
+#line 1886 "y.tab.c"
     break;
 
   case 19: /* $@2: %empty  */
-#line 155 "parser.y"
-      { add('K'); is_for = 1;}
-#line 1890 "y.tab.c"
+#line 157 "parser.y"
+      { add('K'); is_loop = 1;}
+#line 1892 "y.tab.c"
     break;
 
   case 20: /* block: FOR $@2 '(' statement ';' condition ';' statement ')' '{' body '}'  */
-#line 155 "parser.y"
-                                                                                         {
+#line 157 "parser.y"
+                                                                                          {
 	struct node *temp = mknode((yyvsp[-6].treeNode3).nd, (yyvsp[-4].treeNode).nd, "Condition", 0);
     struct node *temp2 = mknode((yyvsp[-8].treeNode).nd, temp, "Initialisation", 0);  
     (yyval.treeNode).nd = mknode(temp2, (yyvsp[-1].treeNode).nd, (yyvsp[-11].treeNode).name, 0);
@@ -1902,27 +1904,27 @@ yyreduce:
 	sprintf(icg[ic_idx++], "\nLABEL %s:\n", (yyvsp[-6].treeNode3).else_body);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
-#line 1906 "y.tab.c"
+#line 1908 "y.tab.c"
     break;
 
   case 21: /* $@3: %empty  */
-#line 166 "parser.y"
-     { add('K'); is_for = 0;}
-#line 1912 "y.tab.c"
+#line 168 "parser.y"
+     { add('K'); is_loop = 0;}
+#line 1914 "y.tab.c"
     break;
 
   case 22: /* $@4: %empty  */
-#line 166 "parser.y"
-                                                 {
+#line 168 "parser.y"
+                                                  {
     sprintf(icg[ic_idx++], BOLDBLUE);
     sprintf(icg[ic_idx++], "\nLABEL %s:\n", (yyvsp[-1].treeNode3).if_body);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
-#line 1922 "y.tab.c"
+#line 1924 "y.tab.c"
     break;
 
   case 23: /* $@5: %empty  */
-#line 170 "parser.y"
+#line 172 "parser.y"
                {
     sprintf(icg[ic_idx++], BOLDMAGENTA);
     sprintf(icg[ic_idx++], "\nJUMP to %s\n", (yyvsp[-5].treeNode3).after_else_body);
@@ -1930,11 +1932,11 @@ yyreduce:
     sprintf(icg[ic_idx++], "\nLABEL  %s:\n", (yyvsp[-5].treeNode3).else_body);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
-#line 1934 "y.tab.c"
+#line 1936 "y.tab.c"
     break;
 
   case 24: /* block: IF $@3 '(' condition ')' $@4 '{' body '}' $@5 else  */
-#line 176 "parser.y"
+#line 178 "parser.y"
        { 
 	struct node *iff = mknode((yyvsp[-7].treeNode3).nd, (yyvsp[-3].treeNode).nd, (yyvsp[-10].treeNode).name, 0); 
 	(yyval.treeNode).nd = mknode(iff, (yyvsp[0].treeNode).nd, "conditionalBranch", 0); 
@@ -1942,151 +1944,151 @@ yyreduce:
 	sprintf(icg[ic_idx++], "\nLABEL %s:\n", (yyvsp[-7].treeNode3).after_else_body);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
-#line 1946 "y.tab.c"
+#line 1948 "y.tab.c"
     break;
 
   case 25: /* block: statement ';'  */
-#line 183 "parser.y"
+#line 185 "parser.y"
                 { (yyval.treeNode).nd = (yyvsp[-1].treeNode).nd; }
-#line 1952 "y.tab.c"
+#line 1954 "y.tab.c"
     break;
 
   case 26: /* $@6: %empty  */
-#line 184 "parser.y"
+#line 186 "parser.y"
              { add('K');}
-#line 1958 "y.tab.c"
+#line 1960 "y.tab.c"
     break;
 
   case 27: /* block: CONSOLELOG $@6 '(' console_outputs ')' ';'  */
-#line 184 "parser.y"
+#line 186 "parser.y"
                                                       { struct node *data = mknode(NULL, NULL, (yyvsp[-2].treeNode).name, 0); (yyval.treeNode).nd = mknode(NULL, data, "ConsoleLog", 0); }
-#line 1964 "y.tab.c"
+#line 1966 "y.tab.c"
     break;
 
   case 28: /* console_outputs: STRINGVALUE  */
-#line 188 "parser.y"
+#line 190 "parser.y"
                              { add('C');}
-#line 1970 "y.tab.c"
+#line 1972 "y.tab.c"
     break;
 
   case 29: /* console_outputs: IDENTIFIER  */
-#line 189 "parser.y"
+#line 191 "parser.y"
               { check_declaration((yyvsp[0].treeNode2).name);}
-#line 1976 "y.tab.c"
+#line 1978 "y.tab.c"
     break;
 
   case 30: /* console_outputs: expression  */
-#line 190 "parser.y"
+#line 192 "parser.y"
               { (yyval.treeNode).nd = (yyvsp[0].treeNode2).nd; }
-#line 1982 "y.tab.c"
+#line 1984 "y.tab.c"
     break;
 
   case 31: /* $@7: %empty  */
-#line 194 "parser.y"
+#line 196 "parser.y"
                    { add('F'); }
-#line 1988 "y.tab.c"
+#line 1990 "y.tab.c"
     break;
 
   case 32: /* $@8: %empty  */
-#line 194 "parser.y"
+#line 196 "parser.y"
                                             { add('I'); }
-#line 1994 "y.tab.c"
+#line 1996 "y.tab.c"
     break;
 
   case 33: /* function: FUNCTION $@7 IDENTIFIER $@8 '(' parameterList ')' '{' body return '}'  */
-#line 194 "parser.y"
+#line 196 "parser.y"
                                                                                                     {
     (yyvsp[-2].treeNode).nd = mknode((yyvsp[-2].treeNode).nd, (yyvsp[-1].treeNode).nd, "FunctionBody", 0);
     struct node *main = mknode((yyvsp[-2].treeNode).nd, (yyvsp[-5].treeNode).nd, (yyvsp[-8].treeNode2).name, 0);
     (yyval.treeNode2).nd = mknode((yyvsp[-10].treeNode).nd, main, "Function", 0);
-    sprintf(func_buff, "FUNCTION BEGIN %s\n\n", (yyvsp[-5].treeNode).name);
+    sprintf(func_buff, "FUNCTION BEGIN %s\n", (yyvsp[-8].treeNode2).name);
 }
-#line 2005 "y.tab.c"
+#line 2007 "y.tab.c"
     break;
 
   case 34: /* parameterList: parameter ',' parameterList  */
-#line 203 "parser.y"
-                                           { (yyval.treeNode).nd = mknode((yyvsp[-2].treeNode).nd, (yyvsp[0].treeNode).nd, "ParameterList", 0); }
-#line 2011 "y.tab.c"
+#line 205 "parser.y"
+                                           { (yyval.treeNode).nd = mknode((yyvsp[-2].treeNode).nd, (yyvsp[0].treeNode).nd, "ParameterList", 0); sprintf(func_params[param_idx++], "PARAM %s\n", (yyvsp[-2].treeNode).name); }
+#line 2013 "y.tab.c"
     break;
 
   case 35: /* parameterList: parameter  */
-#line 204 "parser.y"
-            { (yyval.treeNode).nd = (yyvsp[0].treeNode).nd; }
-#line 2017 "y.tab.c"
+#line 206 "parser.y"
+            { (yyval.treeNode).nd = (yyvsp[0].treeNode).nd; sprintf(func_params[param_idx++], "PARAM %s\n", (yyvsp[0].treeNode).name); }
+#line 2019 "y.tab.c"
     break;
 
   case 36: /* parameterList: %empty  */
-#line 205 "parser.y"
+#line 207 "parser.y"
   { (yyval.treeNode).nd = (yyval.treeNode).nd = mknode(NULL, NULL, "Parameter", 0); }
-#line 2023 "y.tab.c"
+#line 2025 "y.tab.c"
     break;
 
   case 37: /* $@9: %empty  */
-#line 209 "parser.y"
+#line 211 "parser.y"
                       {store_name();}
-#line 2029 "y.tab.c"
+#line 2031 "y.tab.c"
     break;
 
   case 38: /* $@10: %empty  */
-#line 209 "parser.y"
+#line 211 "parser.y"
                                                    {add('I');}
-#line 2035 "y.tab.c"
+#line 2037 "y.tab.c"
     break;
 
   case 39: /* parameter: IDENTIFIER $@9 ':' datatype $@10  */
-#line 209 "parser.y"
+#line 211 "parser.y"
                                                                {(yyvsp[-1].treeNode).nd = mknode(NULL, NULL, (yyvsp[-1].treeNode).name, 0); (yyvsp[-4].treeNode2).nd = mknode(NULL, NULL, (yyvsp[-4].treeNode2).name, 0); (yyval.treeNode).nd = mknode((yyvsp[-1].treeNode).nd, (yyvsp[-4].treeNode2).nd, "Parameter", 0);}
-#line 2041 "y.tab.c"
+#line 2043 "y.tab.c"
     break;
 
   case 40: /* datatype: NUMBERTYPE  */
-#line 213 "parser.y"
+#line 215 "parser.y"
                      { insert_type(); }
-#line 2047 "y.tab.c"
+#line 2049 "y.tab.c"
     break;
 
   case 41: /* datatype: STRINGTYPE  */
-#line 214 "parser.y"
+#line 216 "parser.y"
              { insert_type(); }
-#line 2053 "y.tab.c"
+#line 2055 "y.tab.c"
     break;
 
   case 42: /* datatype: BOOLEANTYPE  */
-#line 215 "parser.y"
+#line 217 "parser.y"
               { insert_type(); }
-#line 2059 "y.tab.c"
+#line 2061 "y.tab.c"
     break;
 
   case 43: /* $@11: %empty  */
-#line 219 "parser.y"
+#line 221 "parser.y"
            { add('K');}
-#line 2065 "y.tab.c"
+#line 2067 "y.tab.c"
     break;
 
   case 44: /* else: ELSE $@11 '{' body '}'  */
-#line 219 "parser.y"
+#line 221 "parser.y"
                                      {  struct node *cond = mknode(NULL, NULL, "EndOfConditional", 0); (yyval.treeNode).nd = mknode((yyvsp[-1].treeNode).nd, cond, (yyvsp[-4].treeNode).name, 0); }
-#line 2071 "y.tab.c"
+#line 2073 "y.tab.c"
     break;
 
   case 45: /* else: %empty  */
-#line 220 "parser.y"
+#line 222 "parser.y"
   { (yyval.treeNode).nd = NULL; }
-#line 2077 "y.tab.c"
+#line 2079 "y.tab.c"
     break;
 
   case 46: /* condition: condition and_or condition  */
-#line 224 "parser.y"
+#line 226 "parser.y"
                                       { (yyval.treeNode3).nd = mknode((yyvsp[-2].treeNode3).nd, (yyvsp[0].treeNode3).nd, (yyvsp[-1].treeNode).name, 0); }
-#line 2083 "y.tab.c"
+#line 2085 "y.tab.c"
     break;
 
   case 47: /* condition: value relop value  */
-#line 225 "parser.y"
+#line 227 "parser.y"
                     { 
 	(yyval.treeNode3).nd = mknode((yyvsp[-2].treeNode2).nd, (yyvsp[0].treeNode2).nd, (yyvsp[-1].treeNode).name, 0);
-	if(is_for) {
+	if(is_loop) {
 		sprintf((yyval.treeNode3).if_body, "L%d", label++);
         sprintf(icg[ic_idx++], BOLDBLUE);
 		sprintf(icg[ic_idx++], "\nLABEL %s:", (yyval.treeNode3).if_body);
@@ -2100,53 +2102,53 @@ yyreduce:
 		sprintf((yyval.treeNode3).after_else_body, "L%d", label++);
 	}
 }
-#line 2104 "y.tab.c"
+#line 2106 "y.tab.c"
     break;
 
   case 48: /* condition: value  */
-#line 241 "parser.y"
+#line 243 "parser.y"
         { (yyval.treeNode3).nd = (yyvsp[0].treeNode2).nd;}
-#line 2110 "y.tab.c"
+#line 2112 "y.tab.c"
     break;
 
   case 49: /* $@12: %empty  */
-#line 242 "parser.y"
+#line 244 "parser.y"
        { add('K');}
-#line 2116 "y.tab.c"
+#line 2118 "y.tab.c"
     break;
 
   case 50: /* condition: TRUE $@12  */
-#line 242 "parser.y"
+#line 244 "parser.y"
                     {(yyval.treeNode3).nd = NULL; }
-#line 2122 "y.tab.c"
+#line 2124 "y.tab.c"
     break;
 
   case 51: /* $@13: %empty  */
-#line 243 "parser.y"
+#line 245 "parser.y"
         { add('K');}
-#line 2128 "y.tab.c"
+#line 2130 "y.tab.c"
     break;
 
   case 52: /* condition: FALSE $@13  */
-#line 243 "parser.y"
+#line 245 "parser.y"
                      {(yyval.treeNode3).nd = NULL; }
-#line 2134 "y.tab.c"
+#line 2136 "y.tab.c"
     break;
 
   case 53: /* $@14: %empty  */
-#line 247 "parser.y"
+#line 249 "parser.y"
                                   { store_name(); }
-#line 2140 "y.tab.c"
+#line 2142 "y.tab.c"
     break;
 
   case 54: /* $@15: %empty  */
-#line 247 "parser.y"
+#line 249 "parser.y"
                                                                  {add('I');}
-#line 2146 "y.tab.c"
+#line 2148 "y.tab.c"
     break;
 
   case 55: /* statement: declaration IDENTIFIER $@14 ':' datatype $@15 init  */
-#line 247 "parser.y"
+#line 249 "parser.y"
                                                                                   {
     (yyvsp[-2].treeNode).nd = mknode(NULL, NULL, (yyvsp[-2].treeNode).name, 0); //making for datatype
 	(yyvsp[-5].treeNode2).nd = mknode(NULL, NULL, (yyvsp[-5].treeNode2).name, 0); //making for identifier
@@ -2182,7 +2184,7 @@ yyreduce:
 			sem_errors++;
         }   
 		else {
-			sprintf(errors[sem_errors], "Line %d: Type mismatch in Declaration\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Declaration\n", countn+1);
 			sem_errors++;
 		}
 	} 
@@ -2195,13 +2197,13 @@ yyreduce:
     set_value((yyvsp[-5].treeNode2).name, (yyvsp[0].treeNode2).value);
 	sprintf(icg[ic_idx++], "%s = %s\n", (yyvsp[-5].treeNode2).name, (yyvsp[0].treeNode2).name);
 }
-#line 2199 "y.tab.c"
+#line 2201 "y.tab.c"
     break;
 
   case 56: /* statement: IDENTIFIER '=' expression  */
-#line 295 "parser.y"
+#line 297 "parser.y"
                             { 
-	if(check_declaration((yyvsp[-2].treeNode2).name)){
+	if(check_declaration((yyvsp[-2].treeNode2).name)) {
 		(yyvsp[-2].treeNode2).nd = mknode(NULL, NULL, (yyvsp[-2].treeNode2).name, 0);  
 		char *id_type = get_type((yyvsp[-2].treeNode2).name); 
 		if(strcmp(id_type, (yyvsp[0].treeNode2).type)) {
@@ -2235,21 +2237,21 @@ yyreduce:
         }
 		}
 		else {
-			(yyval.treeNode).nd = mknode((yyvsp[-2].treeNode2).nd, (yyvsp[0].treeNode2).nd, "=", 0); 
+			(yyval.treeNode).nd = mknode((yyvsp[-2].treeNode2).nd, (yyvsp[0].treeNode2).nd, "=", 0);
+            (yyvsp[-2].treeNode2).value = (yyvsp[0].treeNode2).value;
+            (yyvsp[-2].treeNode2).nd->value = (yyvsp[0].treeNode2).value;
+            set_value((yyvsp[-2].treeNode2).name, (yyvsp[0].treeNode2).value);
+            sprintf(icg[ic_idx++], "%s = %s\n", (yyvsp[-2].treeNode2).name, (yyvsp[0].treeNode2).name);
 		}
 	}
-    (yyvsp[-2].treeNode2).value = (yyvsp[0].treeNode2).value;
-    (yyvsp[-2].treeNode2).nd->value = (yyvsp[0].treeNode2).value;
-    set_value((yyvsp[-2].treeNode2).name, (yyvsp[0].treeNode2).value);
-	sprintf(icg[ic_idx++], "%s = %s\n", (yyvsp[-2].treeNode2).name, (yyvsp[0].treeNode2).name);
 }
-#line 2247 "y.tab.c"
+#line 2249 "y.tab.c"
     break;
 
   case 57: /* statement: IDENTIFIER relop expression  */
-#line 338 "parser.y"
+#line 340 "parser.y"
                               { 
-	if(check_declaration((yyvsp[-2].treeNode2).name)){
+	if(check_declaration((yyvsp[-2].treeNode2).name)) {
 		//$1.nd = mknode(NULL, NULL, $1.name);  
 		char *id_type = get_type((yyvsp[-2].treeNode2).name); 
 		if(strcmp(id_type, (yyvsp[0].treeNode2).type)) {
@@ -2281,16 +2283,15 @@ yyreduce:
 			}   
         }
 	}
-	//struct node *stmt=mknode($1.nd,$3.nd,"stmt"); $$.nd=stmt; }
 	(yyvsp[-2].treeNode2).nd = mknode(NULL, NULL, (yyvsp[-2].treeNode2).name, 0); 
 	(yyval.treeNode).nd = mknode((yyvsp[-2].treeNode2).nd, (yyvsp[0].treeNode2).nd, (yyvsp[-1].treeNode).name, 0); 
 	}
 }
-#line 2290 "y.tab.c"
+#line 2291 "y.tab.c"
     break;
 
   case 58: /* statement: IDENTIFIER INC  */
-#line 376 "parser.y"
+#line 377 "parser.y"
                  { 
 	if(check_declaration((yyvsp[-1].treeNode2).name)){
 		char* x=get_type((yyvsp[-1].treeNode2).name); 
@@ -2302,14 +2303,12 @@ yyreduce:
 	(yyvsp[-1].treeNode2).nd = mknode(NULL, NULL, (yyvsp[-1].treeNode2).name, 0); (yyvsp[0].treeNode).nd = mknode(NULL, NULL, (yyvsp[0].treeNode).name, 0); (yyval.treeNode).nd = mknode((yyvsp[-1].treeNode2).nd, (yyvsp[0].treeNode).nd, "Iterator", 0);
 	sprintf(buff, "t%d = %s + 1\n%s = t%d\n", temp_var, (yyvsp[-1].treeNode2).name, (yyvsp[-1].treeNode2).name, temp_var);
 	temp_var++;
-	//struct node *stmt=mknode($1.nd,NULL,"PostUnaryInc"); $$.nd=stmt;
-	//sprintf(buff,"t%d = %s + 1\n%s = t%d\n",temp_var,$1.name,$1.name,temp_var); temp_var++;
 }
-#line 2309 "y.tab.c"
+#line 2308 "y.tab.c"
     break;
 
   case 59: /* statement: IDENTIFIER DEC  */
-#line 390 "parser.y"
+#line 389 "parser.y"
                  {
 	if(check_declaration((yyvsp[-1].treeNode2).name)){
 		char* x=get_type((yyvsp[-1].treeNode2).name); 
@@ -2319,14 +2318,13 @@ yyreduce:
 		} 
 	}
 	(yyvsp[-1].treeNode2).nd = mknode(NULL, NULL, (yyvsp[-1].treeNode2).name, 0); (yyvsp[0].treeNode).nd = mknode(NULL, NULL, (yyvsp[0].treeNode).name, 0); (yyval.treeNode).nd = mknode((yyvsp[-1].treeNode2).nd, (yyvsp[0].treeNode).nd, "Iterator", 0); 
-	//struct node *stmt=mknode($1.nd,NULL,"PostUnaryDec"); $$.nd=stmt;
 	sprintf(buff,"t%d = %s + 1\n%s = t%d\n",temp_var,(yyvsp[-1].treeNode2).name,(yyvsp[-1].treeNode2).name,temp_var); temp_var++;
 }
-#line 2326 "y.tab.c"
+#line 2324 "y.tab.c"
     break;
 
   case 60: /* statement: INC IDENTIFIER  */
-#line 402 "parser.y"
+#line 400 "parser.y"
                  { 
 	if(check_declaration((yyvsp[-1].treeNode).name)){
 		char* x=get_type((yyvsp[-1].treeNode).name); 
@@ -2336,14 +2334,13 @@ yyreduce:
 		} 
 	}
 	(yyvsp[-1].treeNode).nd = mknode(NULL, NULL, (yyvsp[-1].treeNode).name, 0); (yyvsp[0].treeNode2).nd = mknode(NULL, NULL, (yyvsp[0].treeNode2).name, 0); (yyval.treeNode).nd = mknode((yyvsp[-1].treeNode).nd, (yyvsp[0].treeNode2).nd, "Iterator", 0);
-	//struct node *stmt=mknode($2.nd,NULL,"PreUnaryInc"); $$.nd=stmt;
 	sprintf(buff, "t%d = %s + 1\n%s = t%d\n", temp_var, (yyvsp[0].treeNode2).name, (yyvsp[0].treeNode2).name, temp_var); temp_var++;
 }
-#line 2343 "y.tab.c"
+#line 2340 "y.tab.c"
     break;
 
   case 61: /* statement: DEC IDENTIFIER  */
-#line 414 "parser.y"
+#line 411 "parser.y"
                  { 
 	if(check_declaration((yyvsp[-1].treeNode).name)){
 		char* x=get_type((yyvsp[-1].treeNode).name); 
@@ -2354,78 +2351,77 @@ yyreduce:
 	}
 	(yyvsp[-1].treeNode).nd = mknode(NULL, NULL, (yyvsp[-1].treeNode).name, 0); (yyvsp[0].treeNode2).nd = mknode(NULL, NULL, (yyvsp[0].treeNode2).name, 0); (yyval.treeNode).nd = mknode((yyvsp[-1].treeNode).nd, (yyvsp[0].treeNode2).nd, "Iterator", 0);
 	sprintf(buff, "t%d = %s - 1\n%s = t%d\n", temp_var, (yyvsp[0].treeNode2).name, (yyvsp[0].treeNode2).name, temp_var); temp_var++;
-	//struct node *stmt=mknode($1.nd,NULL,"PreUnaryInc"); $$.nd=stmt;
 }
-#line 2360 "y.tab.c"
+#line 2356 "y.tab.c"
     break;
 
   case 62: /* declaration: LET  */
-#line 429 "parser.y"
+#line 425 "parser.y"
                  { add('K');}
-#line 2366 "y.tab.c"
+#line 2362 "y.tab.c"
     break;
 
   case 63: /* declaration: VAR  */
-#line 430 "parser.y"
+#line 426 "parser.y"
       { add('K');}
-#line 2372 "y.tab.c"
+#line 2368 "y.tab.c"
     break;
 
   case 64: /* declaration: CONST  */
-#line 431 "parser.y"
+#line 427 "parser.y"
         { add('K');}
-#line 2378 "y.tab.c"
+#line 2374 "y.tab.c"
     break;
 
   case 65: /* init: '=' value  */
-#line 435 "parser.y"
+#line 431 "parser.y"
                 { (yyval.treeNode2).nd = (yyvsp[0].treeNode2).nd; sprintf((yyval.treeNode2).type, "%s", (yyvsp[0].treeNode2).type); strcpy((yyval.treeNode2).name, (yyvsp[0].treeNode2).name); (yyval.treeNode2).value = (yyvsp[0].treeNode2).value; (yyval.treeNode2).nd->value = (yyvsp[0].treeNode2).value; }
-#line 2384 "y.tab.c"
+#line 2380 "y.tab.c"
     break;
 
   case 66: /* init: '=' expression  */
-#line 436 "parser.y"
+#line 432 "parser.y"
                  { (yyval.treeNode2).nd = (yyvsp[0].treeNode2).nd; sprintf((yyval.treeNode2).type, "%s", (yyvsp[0].treeNode2).type); strcpy((yyval.treeNode2).name, (yyvsp[0].treeNode2).name); (yyval.treeNode2).value = (yyvsp[0].treeNode2).value; (yyval.treeNode2).nd->value = (yyvsp[0].treeNode2).value; }
-#line 2390 "y.tab.c"
+#line 2386 "y.tab.c"
     break;
 
   case 67: /* init: %empty  */
-#line 437 "parser.y"
+#line 433 "parser.y"
   { sprintf((yyval.treeNode2).type, "%s", "null"); (yyval.treeNode2).nd = mknode(NULL, NULL, "NULL", 0); strcpy((yyval.treeNode2).name, "NULL"); }
-#line 2396 "y.tab.c"
+#line 2392 "y.tab.c"
     break;
 
   case 68: /* expression: expression addops term  */
-#line 441 "parser.y"
+#line 437 "parser.y"
                                     { 
 	if(strcmp((yyvsp[-2].treeNode2).type, (yyvsp[0].treeNode2).type)){
 		//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;
 		if(!strcmp((yyvsp[-2].treeNode2).type, "number") && !strcmp((yyvsp[0].treeNode2).type, "string")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number + string\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - number and string\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "string") && !strcmp((yyvsp[0].treeNode2).type, "number")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string + number\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - string and number\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "boolean") && !strcmp((yyvsp[0].treeNode2).type, "number")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean + number\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - boolean and number\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "boolean") && !strcmp((yyvsp[0].treeNode2).type, "string")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean + string\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - boolean and string\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "number") && !strcmp((yyvsp[0].treeNode2).type, "boolean")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number + boolean\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - number and boolean\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "string") && !strcmp((yyvsp[0].treeNode2).type, "boolean")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string + boolean\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - string and boolean\n", countn+1);
 			sem_errors++;
 		}
 		else{
-			sprintf(errors[sem_errors], "Line %d: Type mismatch in Expression.\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression.\n", countn+1);
 			sem_errors++;
 		}
 	} 
@@ -2439,46 +2435,46 @@ yyreduce:
     (yyval.treeNode2).nd->value = (yyval.treeNode2).value;
 	sprintf(icg[ic_idx++], "%s = %s %s %s\n",  (yyval.treeNode2).name, (yyvsp[-2].treeNode2).name, (yyvsp[-1].treeNode).name, (yyvsp[0].treeNode2).name);
 }
-#line 2443 "y.tab.c"
+#line 2439 "y.tab.c"
     break;
 
   case 69: /* expression: term  */
-#line 483 "parser.y"
+#line 479 "parser.y"
        { strcpy((yyval.treeNode2).name, (yyvsp[0].treeNode2).name); sprintf((yyval.treeNode2).type, "%s", (yyvsp[0].treeNode2).type); (yyval.treeNode2).nd = (yyvsp[0].treeNode2).nd; (yyval.treeNode2).value = (yyvsp[0].treeNode2).value; (yyval.treeNode2).nd->value = (yyvsp[0].treeNode2).value; }
-#line 2449 "y.tab.c"
+#line 2445 "y.tab.c"
     break;
 
   case 70: /* term: term mulops factor  */
-#line 487 "parser.y"
+#line 483 "parser.y"
                           { 
 	if(strcmp((yyvsp[-2].treeNode2).type, (yyvsp[0].treeNode2).type)){
 		//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;
 		if(!strcmp((yyvsp[-2].treeNode2).type, "number") && !strcmp((yyvsp[0].treeNode2).type, "string")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number + string\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - number and string\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "string") && !strcmp((yyvsp[0].treeNode2).type, "number")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string + number\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - string and number\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "boolean") && !strcmp((yyvsp[0].treeNode2).type, "number")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean + number\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - boolean and number\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "boolean") && !strcmp((yyvsp[0].treeNode2).type, "string")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean + string\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - boolean and string\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "number") && !strcmp((yyvsp[0].treeNode2).type, "boolean")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number + boolean\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - number and boolean\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "string") && !strcmp((yyvsp[0].treeNode2).type, "boolean")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string + boolean\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - string and boolean\n", countn+1);
 			sem_errors++;
 		}
 		else{
-			sprintf(errors[sem_errors], "Line %d: Type mismatch in Expression.\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression.\n", countn+1);
 			sem_errors++;
 		}
 	} 
@@ -2492,46 +2488,46 @@ yyreduce:
     (yyval.treeNode2).nd->value = (yyval.treeNode2).value;
 	sprintf(icg[ic_idx++], "%s = %s %s %s\n",  (yyval.treeNode2).name, (yyvsp[-2].treeNode2).name, (yyvsp[-1].treeNode).name, (yyvsp[0].treeNode2).name);
 }
-#line 2496 "y.tab.c"
+#line 2492 "y.tab.c"
     break;
 
   case 71: /* term: factor  */
-#line 529 "parser.y"
+#line 525 "parser.y"
          { strcpy((yyval.treeNode2).name, (yyvsp[0].treeNode2).name); sprintf((yyval.treeNode2).type, "%s", (yyvsp[0].treeNode2).type); (yyval.treeNode2).nd = (yyvsp[0].treeNode2).nd; (yyval.treeNode2).nd->value = (yyvsp[0].treeNode2).value; }
-#line 2502 "y.tab.c"
+#line 2498 "y.tab.c"
     break;
 
   case 72: /* factor: base exponent base  */
-#line 533 "parser.y"
+#line 529 "parser.y"
                             { 
 	if(strcmp((yyvsp[-2].treeNode2).type, (yyvsp[0].treeNode2).type)){
 		//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;
 		if(!strcmp((yyvsp[-2].treeNode2).type, "number") && !strcmp((yyvsp[0].treeNode2).type, "string")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number + string\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - number and string\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "string") && !strcmp((yyvsp[0].treeNode2).type, "number")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string + number\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - string and number\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "boolean") && !strcmp((yyvsp[0].treeNode2).type, "number")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean + number\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - boolean and number\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "boolean") && !strcmp((yyvsp[0].treeNode2).type, "string")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: boolean + string\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - boolean and string\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "number") && !strcmp((yyvsp[0].treeNode2).type, "boolean")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: number + boolean\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - number and boolean\n", countn+1);
 			sem_errors++;
 		}
 		else if(!strcmp((yyvsp[-2].treeNode2).type, "string") && !strcmp((yyvsp[0].treeNode2).type, "boolean")) {
-			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression: string + boolean\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - string and boolean\n", countn+1);
 			sem_errors++;
 		}
 		else{
-			sprintf(errors[sem_errors], "Line %d: Type mismatch in Expression.\n", countn+1);
+			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression.\n", countn+1);
 			sem_errors++;
 		}
 	} 
@@ -2545,47 +2541,47 @@ yyreduce:
     (yyval.treeNode2).nd->value = (yyval.treeNode2).value;
 	sprintf(icg[ic_idx++], "%s = %s %s %s\n",  (yyval.treeNode2).name, (yyvsp[-2].treeNode2).name, (yyvsp[-1].treeNode2).name, (yyvsp[0].treeNode2).name);
 }
-#line 2549 "y.tab.c"
+#line 2545 "y.tab.c"
     break;
 
   case 73: /* factor: LOG '(' value ',' value ')'  */
-#line 575 "parser.y"
+#line 571 "parser.y"
                               {(yyval.treeNode2).nd = mknode((yyvsp[-3].treeNode2).nd, (yyvsp[-1].treeNode2).nd, (yyvsp[-5].treeNode).name, 0); }
-#line 2555 "y.tab.c"
+#line 2551 "y.tab.c"
     break;
 
   case 74: /* factor: base  */
-#line 576 "parser.y"
+#line 572 "parser.y"
        { strcpy((yyval.treeNode2).name, (yyvsp[0].treeNode2).name); sprintf((yyval.treeNode2).type, "%s", (yyvsp[0].treeNode2).type); (yyval.treeNode2).nd = (yyvsp[0].treeNode2).nd; (yyval.treeNode2).value = (yyvsp[0].treeNode2).value; (yyval.treeNode2).nd->value = (yyvsp[0].treeNode2).value; }
-#line 2561 "y.tab.c"
+#line 2557 "y.tab.c"
     break;
 
   case 75: /* base: value  */
-#line 580 "parser.y"
+#line 576 "parser.y"
               { strcpy((yyval.treeNode2).name, (yyvsp[0].treeNode2).name); sprintf((yyval.treeNode2).type, "%s", (yyvsp[0].treeNode2).type); (yyval.treeNode2).nd = (yyvsp[0].treeNode2).nd; (yyval.treeNode2).value = (yyvsp[0].treeNode2).value; (yyval.treeNode2).nd->value = (yyvsp[0].treeNode2).value; }
-#line 2567 "y.tab.c"
+#line 2563 "y.tab.c"
     break;
 
   case 76: /* base: '(' expression ')'  */
-#line 581 "parser.y"
+#line 577 "parser.y"
                       { strcpy((yyval.treeNode2).name, (yyvsp[-1].treeNode2).name); sprintf((yyval.treeNode2).type, "%s", (yyvsp[-1].treeNode2).type); (yyval.treeNode2).nd = (yyvsp[-1].treeNode2).nd; }
-#line 2573 "y.tab.c"
+#line 2569 "y.tab.c"
     break;
 
   case 77: /* and_or: AND  */
-#line 585 "parser.y"
+#line 581 "parser.y"
              { (yyval.treeNode).nd = mknode(NULL, NULL, (yyvsp[0].treeNode).name, 0); }
-#line 2579 "y.tab.c"
+#line 2575 "y.tab.c"
     break;
 
   case 78: /* and_or: OR  */
-#line 586 "parser.y"
+#line 582 "parser.y"
      { (yyval.treeNode).nd = mknode(NULL, NULL, (yyvsp[0].treeNode).name, 0); }
-#line 2585 "y.tab.c"
+#line 2581 "y.tab.c"
     break;
 
   case 90: /* number: INTEGER  */
-#line 613 "parser.y"
+#line 609 "parser.y"
                 {
     strcpy((yyval.treeNode2).name, (yyvsp[0].treeNode).name);
     sprintf((yyval.treeNode2).type, "%s", "number");
@@ -2593,11 +2589,11 @@ yyreduce:
     (yyval.treeNode2).nd = mknode(NULL, NULL, (yyvsp[0].treeNode).name, atoi((yyvsp[0].treeNode).name));
     (yyval.treeNode2).value = atoi((yyvsp[0].treeNode).name);
 }
-#line 2597 "y.tab.c"
+#line 2593 "y.tab.c"
     break;
 
   case 91: /* number: FLOAT  */
-#line 620 "parser.y"
+#line 616 "parser.y"
         {
     strcpy((yyval.treeNode2).name, (yyvsp[0].treeNode).name);
     sprintf((yyval.treeNode2).type, "%s", "number");
@@ -2605,17 +2601,17 @@ yyreduce:
     (yyval.treeNode2).nd = mknode(NULL, NULL, (yyvsp[0].treeNode).name, atof((yyvsp[0].treeNode).name)); 
     (yyval.treeNode2).value = atof((yyvsp[0].treeNode).name);
 }
-#line 2609 "y.tab.c"
+#line 2605 "y.tab.c"
     break;
 
   case 92: /* value: number  */
-#line 630 "parser.y"
+#line 626 "parser.y"
               { (yyval.treeNode2).nd = mknode(NULL, NULL, (yyvsp[0].treeNode2).name, 0); }
-#line 2615 "y.tab.c"
+#line 2611 "y.tab.c"
     break;
 
   case 93: /* value: IDENTIFIER  */
-#line 631 "parser.y"
+#line 627 "parser.y"
              {
     strcpy((yyval.treeNode2).name, (yyvsp[0].treeNode2).name);
     char *id_type = get_type((yyvsp[0].treeNode2).name);
@@ -2628,76 +2624,76 @@ yyreduce:
         (yyval.treeNode2).nd->value = (yyval.treeNode2).value;
     }
 }
-#line 2632 "y.tab.c"
+#line 2628 "y.tab.c"
     break;
 
   case 94: /* value: STRINGVALUE  */
-#line 643 "parser.y"
+#line 639 "parser.y"
               { strcpy((yyval.treeNode2).name, (yyvsp[0].treeNode).name); sprintf((yyval.treeNode2).type, "string"); add('C'); (yyval.treeNode2).nd = mknode(NULL, NULL, (yyvsp[0].treeNode).name, 0); }
-#line 2638 "y.tab.c"
+#line 2634 "y.tab.c"
     break;
 
   case 95: /* $@16: %empty  */
-#line 644 "parser.y"
+#line 640 "parser.y"
        { add('K');}
-#line 2644 "y.tab.c"
+#line 2640 "y.tab.c"
     break;
 
   case 96: /* value: TRUE $@16  */
-#line 644 "parser.y"
+#line 640 "parser.y"
                     {(yyval.treeNode2).nd = mknode(NULL, NULL, (yyvsp[-1].treeNode).name, 0);}
-#line 2650 "y.tab.c"
+#line 2646 "y.tab.c"
     break;
 
   case 97: /* $@17: %empty  */
-#line 645 "parser.y"
+#line 641 "parser.y"
         { add('K');}
-#line 2656 "y.tab.c"
+#line 2652 "y.tab.c"
     break;
 
   case 98: /* value: FALSE $@17  */
-#line 645 "parser.y"
+#line 641 "parser.y"
                      {(yyval.treeNode2).nd = mknode(NULL, NULL, (yyvsp[-1].treeNode).name, 0);}
-#line 2662 "y.tab.c"
+#line 2658 "y.tab.c"
     break;
 
   case 99: /* $@18: %empty  */
-#line 646 "parser.y"
+#line 642 "parser.y"
        { add('K');}
-#line 2668 "y.tab.c"
+#line 2664 "y.tab.c"
     break;
 
   case 100: /* value: SCAN $@18 '(' ')'  */
-#line 646 "parser.y"
+#line 642 "parser.y"
                            { (yyval.treeNode2).nd = mknode(NULL, NULL, "scan", 0); }
-#line 2674 "y.tab.c"
+#line 2670 "y.tab.c"
     break;
 
   case 101: /* $@19: %empty  */
-#line 650 "parser.y"
+#line 646 "parser.y"
                { add('K');}
-#line 2680 "y.tab.c"
+#line 2676 "y.tab.c"
     break;
 
   case 102: /* return: RETURN $@19 value ';'  */
-#line 650 "parser.y"
+#line 646 "parser.y"
                                        { 
     (yyvsp[-3].treeNode).nd = mknode(NULL, NULL, "return", 0);
     (yyval.treeNode).nd = mknode((yyvsp[-3].treeNode).nd, (yyvsp[-1].treeNode2).nd, "ReturnStatement", 0);
     sprintf(icg[ic_idx++], BOLDYELLOW);
     sprintf(icg[ic_idx++], "\nRETURN %s\n", (yyvsp[-1].treeNode2).name);
 }
-#line 2691 "y.tab.c"
+#line 2687 "y.tab.c"
     break;
 
   case 103: /* return: %empty  */
-#line 656 "parser.y"
+#line 652 "parser.y"
   { (yyval.treeNode).nd = NULL; }
-#line 2697 "y.tab.c"
+#line 2693 "y.tab.c"
     break;
 
 
-#line 2701 "y.tab.c"
+#line 2697 "y.tab.c"
 
       default: break;
     }
@@ -2921,7 +2917,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 660 "parser.y"
+#line 656 "parser.y"
 
 
 
@@ -2960,7 +2956,7 @@ void printBTHelper(char* prefix, struct node* ptr, int isLeft) {
         if(ptr->value != 0) {
             printf("%s",ptr->token);
             printf(BOLDMAGENTA);
-            printf(" (%0.1f)",ptr->value);
+            printf(" (Value -> %0.1f)",ptr->value);
             printf(RESET);
         }
         else {
@@ -3026,13 +3022,17 @@ void printSemanticErrors() {
 }
 
 void printIntermediateCode() {
-	printf("\n\n\n");
+	printf("\n\n");
     printf(RESET);
 	printf("\033[4mIntermediate Code Generation\033[24m\n");
     printf(BOLDYELLOW);
     printf("%s", func_buff);
+    for(int i = 0; i < param_idx; i++) {
+        printf("%s", func_params[i]);
+    }
     printf(BOLDGREEN);
-	for(int i=0; i<ic_idx; i++){
+    printf("\n");
+	for(int i = 0; i < ic_idx; i++){
 		printf("%s", icg[i]);
 	}
 }
