@@ -56,7 +56,6 @@
     char reserved[10][20] = {"number", "import", "async", "string", "void", "if", "else", "for", "while", "return"};
     char icg[100][200];
     char func_buff[200];
-    char proc_buff[200];
     char func_params[20][200];
 
     void insert_type();
@@ -181,15 +180,29 @@ block: function { $$.nd = $1.nd; }
 	sprintf(icg[ic_idx++], "\nLABEL L%d:\n",label++);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
-| FOR { add('K'); is_loop = 1;}'(' statement ';' condition ';' statement ')' '{' body '}' {
-	struct node *temp = mknode($6.nd, $8.nd, "Condition", 0);
-    struct node *temp2 = mknode($4.nd, temp, "Initialisation", 0);  
-    $$.nd = mknode(temp2, $11.nd, $1.name, 0);
-	sprintf(icg[ic_idx++], "%s", buff);
-    sprintf(icg[ic_idx++], BOLDMAGENTA);
-	sprintf(icg[ic_idx++], "JUMP TO %s\n", $6.if_body);
+| FOR { add('K'); is_loop = 1;}'(' statement ';' condition {
     sprintf(icg[ic_idx++], BOLDBLUE);
-	sprintf(icg[ic_idx++], "\nLABEL %s:\n", $6.else_body);
+    sprintf(icg[ic_idx++], "\nLABEL L%d:\n", label++);
+    sprintf(icg[ic_idx++], BOLDGREEN);
+    for(int i = 0; i <$6.tlistsize; i++){
+        char temp[40];
+        sprintf(temp, "\033[1m\033[35mGOTO L%d\n\033[1m\033[32m", label - 1);
+        strcat(icg[$6.tlist[i]], temp);
+    }
+} ';' statement ')' '{' body '}' {
+	struct node *temp = mknode($6.nd, $9.nd, "Condition", 0);
+    struct node *temp2 = mknode($4.nd, temp, "Initialisation", 0);  
+    $$.nd = mknode(temp2, $12.nd, $1.name, 0);
+    sprintf(icg[ic_idx++], BOLDMAGENTA);
+    sprintf(icg[ic_idx++], "JUMP TO L%d\n", $6.label_for_while_start);
+    sprintf(icg[ic_idx++], BOLDGREEN);
+    for(int i = 0; i < $6.flistsize; i++){
+        char temp[40];
+        sprintf(temp, "\033[1m\033[35mGOTO L%d\n\033[1m\033[32m", label);
+        strcat(icg[$6.flist[i]], temp);
+    }
+    sprintf(icg[ic_idx++], BOLDBLUE);
+	sprintf(icg[ic_idx++], "\nLABEL L%d:\n",label++);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
 | IF { add('K'); is_loop = 0;}  '(' condition ')' { 
