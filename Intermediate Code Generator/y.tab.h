@@ -147,7 +147,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 82 "parser.y"
+#line 83 "parser.y"
  
 	struct var_name { 
 		char name[100]; 
@@ -164,14 +164,24 @@ union YYSTYPE
 
 	struct var_name3 {
 		char name[100];
+        char type[8];
 		struct node* nd;
 		char if_body[5];
 		char else_body[5];
 		char after_else_body[5];
         float value;
+        int tlist[10];
+        int tlistsize;
+        int flistsize;
+        int flist[10];
+        int label_for_while_start;
 	} treeNode3;
 
-#line 175 "y.tab.h"
+	struct var_name4 { 
+        int next_quad;
+	} treeNode4; 
+
+#line 185 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

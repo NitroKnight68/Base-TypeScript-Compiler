@@ -54,8 +54,9 @@
     char buff[400];
     char errors[10][100];
     char reserved[10][20] = {"number", "import", "async", "string", "void", "if", "else", "for", "while", "return"};
-    char icg[50][100];
+    char icg[100][200];
     char func_buff[200];
+    char proc_buff[200];
     char func_params[20][200];
 
     void insert_type();
@@ -95,19 +96,30 @@
 
 	struct var_name3 {
 		char name[100];
+        char type[8];
 		struct node* nd;
 		char if_body[5];
 		char else_body[5];
 		char after_else_body[5];
         float value;
+        int tlist[10];
+        int tlistsize;
+        int flistsize;
+        int flist[10];
+        int label_for_while_start;
 	} treeNode3;
+
+	struct var_name4 { 
+        int next_quad;
+	} treeNode4; 
 }
 
 %token <treeNode>  IMPORT FROM AS CONSOLELOG SCAN IF WHILE ELSE RETURN ELIF LET VAR CONST ADD SUB MULT DIV LOG GE LE GT LT EQ NE TRUE FALSE AND OR NUMBERTYPE STRINGTYPE BOOLEANTYPE FUNCTION INTEGER FLOAT STRINGVALUE INC DEC FOR
 %token <treeNode2> POW IDENTIFIER
-%type  <treeNode>  main importList imports moduleList modules parameter parameterList datatype body block console_outputs else statement declaration mulops addops relop return and_or 
-%type  <treeNode2> init expression value number term factor base exponent function
+%type  <treeNode>  main importList imports moduleList modules parameter parameterList argument argumentList datatype body block console_outputs else statement declaration mulops addops relop return and_or 
+%type  <treeNode2> init expression value number term factor base exponent function procedure
 %type  <treeNode3> condition
+%type  <treeNode4> M
 %define parse.error verbose 
 
 %%
@@ -145,13 +157,28 @@ body: block body {$$.nd = mknode($1.nd, $2.nd, "Scope", 0); }
 
         
 block: function { $$.nd = $1.nd; }
-| WHILE { add('K'); is_loop = 1;} '(' condition ')''{' body '}' { 
-	$$.nd = mknode($4.nd, $7.nd, $1.name, 0); 
-	sprintf(icg[ic_idx++], "%s", buff);
-    sprintf(icg[ic_idx++], BOLDMAGENTA);
-	sprintf(icg[ic_idx++], "\nJUMP to %s\n", $4.if_body);
+| procedure { $$.nd = $1.nd; }
+| WHILE { add('K'); is_loop = 1;} '(' condition ')' {
     sprintf(icg[ic_idx++], BOLDBLUE);
-	sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.else_body);
+    sprintf(icg[ic_idx++], "\nLABEL L%d:\n", label++);
+    sprintf(icg[ic_idx++], BOLDGREEN);
+    for(int i = 0; i <$4.tlistsize; i++){
+        char temp[40];
+        sprintf(temp, "\033[1m\033[35mGOTO L%d\n\033[1m\033[32m", label - 1);
+        strcat(icg[$4.tlist[i]], temp);
+    }
+} '{' body '}' { 
+    $$.nd = mknode($4.nd, $8.nd, $1.name, 0);
+    sprintf(icg[ic_idx++], BOLDMAGENTA);
+    sprintf(icg[ic_idx++], "JUMP TO L%d\n", $4.label_for_while_start);
+    sprintf(icg[ic_idx++], BOLDGREEN);
+    for(int i=0;i<$4.flistsize;i++){
+        char temp[40];
+        sprintf(temp, "\033[1m\033[35mGOTO L%d\n\033[1m\033[32m", label);
+        strcat(icg[$4.flist[i]], temp);
+    }
+    sprintf(icg[ic_idx++], BOLDBLUE);
+	sprintf(icg[ic_idx++], "\nLABEL L%d:\n",label++);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
 | FOR { add('K'); is_loop = 1;}'(' statement ';' condition ';' statement ')' '{' body '}' {
@@ -160,26 +187,37 @@ block: function { $$.nd = $1.nd; }
     $$.nd = mknode(temp2, $11.nd, $1.name, 0);
 	sprintf(icg[ic_idx++], "%s", buff);
     sprintf(icg[ic_idx++], BOLDMAGENTA);
-	sprintf(icg[ic_idx++], "\nJUMP to %s\n", $6.if_body);
+	sprintf(icg[ic_idx++], "JUMP TO %s\n", $6.if_body);
     sprintf(icg[ic_idx++], BOLDBLUE);
 	sprintf(icg[ic_idx++], "\nLABEL %s:\n", $6.else_body);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
-| IF { add('K'); is_loop = 0;}  '(' condition ')' {
-    sprintf(icg[ic_idx++], BOLDBLUE);
-    sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.if_body);
-    sprintf(icg[ic_idx++], BOLDGREEN);
-} '{' body '}' {
+| IF { add('K'); is_loop = 0;}  '(' condition ')' { 
+        sprintf(icg[ic_idx++], BOLDBLUE);
+        sprintf(icg[ic_idx++], "\nLABEL L%d:\n", label++);
+        sprintf(icg[ic_idx++], BOLDGREEN);
+        for(int i = 0; i < $4.tlistsize; i++){
+            char temp[40];
+            sprintf(temp, "\033[1m\033[35mGOTO L%d\n\033[1m\033[32m", label - 1);
+            strcat(icg[$4.tlist[i]], temp);
+        }
+} 
+'{' body '}' {
     sprintf(icg[ic_idx++], BOLDMAGENTA);
-    sprintf(icg[ic_idx++], "\nJUMP to %s\n", $4.after_else_body);
+    sprintf(icg[ic_idx++],"JUMP TO L%d\n", label+1);
     sprintf(icg[ic_idx++], BOLDBLUE);
-    sprintf(icg[ic_idx++], "\nLABEL  %s:\n", $4.else_body);
+    sprintf(icg[ic_idx++], "\nLABEL L%d:\n", label++);
     sprintf(icg[ic_idx++], BOLDGREEN);
+    for(int i=0;i<$4.flistsize;i++){
+        char temp[40];
+        sprintf(temp, "\033[1m\033[35mGOTO L%d\n\033[1m\033[32m", label-1);
+        sprintf(icg[$4.flist[i]], temp);
+    }
 } else { 
-	struct node *iff = mknode($4.nd, $8.nd, $1.name, 0); 
-	$$.nd = mknode(iff, $11.nd, "conditionalBranch", 0); 
+    struct node *iff = mknode($4.nd, $8.nd, $1.name,0); 
+    $$.nd = mknode(iff, $11.nd, "conditionalBranch",0); 
     sprintf(icg[ic_idx++], BOLDBLUE);
-	sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.after_else_body);
+    sprintf(icg[ic_idx++], "\nLABEL L%d:\n", label++);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
 | statement ';' { $$.nd = $1.nd; }
@@ -197,10 +235,20 @@ function: FUNCTION { add('F'); } IDENTIFIER { add('I'); } '(' parameterList ')' 
     $9.nd = mknode($9.nd, $10.nd, "FunctionBody", 0);
     struct node *main = mknode($9.nd, $6.nd, $3.name, 0);
     $$.nd = mknode($1.nd, main, "Function", 0);
-    sprintf(func_buff, "FUNCTION BEGIN %s\n", $3.name);
+    sprintf(func_buff, "FUNCTION DEFINITION %s\n", $3.name);
 }  
 ;
 
+procedure: IDENTIFIER '(' argumentList ')' ';' { $1.nd = mknode(NULL, NULL, $1.name, 0); $$.nd = mknode($1.nd, $3.nd, "FunctionCall", 0); sprintf(icg[ic_idx++], BOLDYELLOW); sprintf(icg[ic_idx++], "\nFUNCTION CALL %s\n", $1.name); sprintf(icg[ic_idx++], BOLDGREEN); }
+;
+
+argumentList: argument ',' argumentList { check_declaration($1.name); $$.nd = mknode($1.nd, $3.nd, "ArgumentList", 0); }
+| argument { check_declaration($1.name); $$.nd = $1.nd; }
+| { $$.nd = $$.nd = mknode(NULL, NULL, "Argument", 0); }
+;
+
+argument: IDENTIFIER {store_name();} { $1.nd = mknode(NULL, NULL, $1.name, 0); $$.nd = mknode(NULL, $1.nd, "Argument", 0); }
+;
 
 parameterList: parameter ',' parameterList { $$.nd = mknode($1.nd, $3.nd, "ParameterList", 0); sprintf(func_params[param_idx++], "PARAM %s\n", $1.name); }
 | parameter { $$.nd = $1.nd; sprintf(func_params[param_idx++], "PARAM %s\n", $1.name); }
@@ -223,22 +271,90 @@ else: ELSE { add('K');} '{' body '}' {  struct node *cond = mknode(NULL, NULL, "
 ;
 
 
-condition: condition and_or condition { $$.nd = mknode($1.nd, $3.nd, $2.name, 0); }
+M: { 
+    $$.next_quad = ic_idx; 
+    char new1[100];
+    sprintf(new1, "%d:\033[1m\033[32m", ic_idx);
+    char new2[100];
+    sprintf(new2, "\033[1m\033[34m\nLABEL S");
+    strcat(new2, new1);
+    strcpy(icg[ic_idx], new2);
+ };
+
+condition: condition AND M condition { 
+	$$.nd = mknode($1.nd, $4.nd, "AND",0); 
+	for (int i = 0; i < $1.tlistsize; i++) {
+        char temp[40];
+        sprintf(temp, "%d\n\033[1m\033[32m", $3.next_quad);
+        char temp2[100];
+        sprintf(temp2,"\033[1m\033[35mGOTO S");
+        strcat(temp2, temp);
+        strcat(icg[$1.tlist[i]], temp2);
+    }
+    $$.tlistsize = 0;
+    $$.flistsize = 0;
+    for (int i = 0; i < $4.tlistsize; i++) {
+        $$.tlist[$$.tlistsize++] = $4.tlist[i];
+    }
+    for (int i = 0; i < $1.flistsize; i++) {
+        $$.flist[$$.flistsize++] = $1.flist[i];
+    }
+    for(int i=0;i<$4.flistsize;i++){
+        $$.flist[$$.flistsize++] = $4.flist[i];
+    }
+	$$.label_for_while_start = $1.label_for_while_start;
+}
+| condition OR M condition { 
+	$$.nd = mknode($1.nd, $4.nd, "OR",0);
+    for (int i = 0; i < $1.flistsize; i++) {
+        char temp[40];
+        sprintf(temp, "%d\n\033[1m\033[32m", $3.next_quad);
+        char temp2[100];
+        sprintf(temp2, "\033[1m\033[35mGOTO S");
+        strcat(temp2, temp);
+        strcat(icg[$1.flist[i]], temp2);
+    }
+    $$.tlistsize = 0;
+    $$.flistsize = 0;
+    for (int i = 0; i < $1.tlistsize; i++) {
+        $$.tlist[$$.tlistsize++] = $1.tlist[i];
+    }
+    for (int i = 0; i < $4.tlistsize; i++) {
+        $$.tlist[$$.tlistsize++] = $4.tlist[i];
+    }
+    for(int i=0;i<$4.flistsize;i++){
+        $$.flist[$$.flistsize++] = $4.flist[i];
+    }
+	$$.label_for_while_start = $1.label_for_while_start;
+}
 | value relop value { 
 	$$.nd = mknode($1.nd, $3.nd, $2.name, 0);
-	if(is_loop) {
-		sprintf($$.if_body, "L%d", label++);
+    char ifstt[400];
+    if(is_loop) {
+        $$.label_for_while_start = label;
         sprintf(icg[ic_idx++], BOLDBLUE);
-		sprintf(icg[ic_idx++], "\nLABEL %s:", $$.if_body);
+        sprintf(icg[ic_idx++], "\nLABEL L%d:\n", label++);
         sprintf(icg[ic_idx++], BOLDGREEN);
-		sprintf(icg[ic_idx++], "\nif NOT (%s %s %s) GOTO L%d\n", $1.name, $2.name, $3.name, label);
-		sprintf($$.else_body, "L%d", label++);
-	} else {
-		sprintf(icg[ic_idx++], "\nif (%s %s %s) GOTO L%d else GOTO L%d\n", $1.name, $2.name, $3.name, label, label+1);
-		sprintf($$.if_body, "L%d", label++);
-		sprintf($$.else_body, "L%d", label++);
-		sprintf($$.after_else_body, "L%d", label++);
-	}
+        is_loop = 0;
+    }
+    sprintf(ifstt, "\nif %s %s %s\n", $1.name, $2.name, $3.name);
+    strcat(icg[ic_idx++], ifstt);
+    $$.tlistsize = 0;
+    $$.flistsize = 0;
+    $$.tlist[$$.tlistsize++] = ic_idx - 1;
+    $$.flist[$$.flistsize++] = ic_idx++;
+}
+| '(' condition ')' { 
+    $$.nd = $2.nd; 
+    $$.tlistsize = $2.tlistsize;
+    $$.flistsize = $2.flistsize;
+    for(int i=0;i<$2.tlistsize;i++){
+        $$.tlist[i] = $2.tlist[i];
+    }
+    for(int i=0;i<$2.flistsize;i++){
+        $$.flist[i] = $2.flist[i];
+    }
+	$$.label_for_while_start = $2.label_for_while_start;
 }
 | value { $$.nd = $1.nd;}
 | TRUE { add('K');} {$$.nd = NULL; }
@@ -251,11 +367,7 @@ statement: declaration IDENTIFIER { store_name(); } ':' datatype {add('I');} ini
 	$2.nd = mknode(NULL, NULL, $2.name, 0); //making for identifier
 	$1.nd = mknode($5.nd, $2.nd, $1.name, 0); //making for the declaration
 	int t = check_types($5.name, $7.type); //here we're checking types
-	// printf("%s\n", $5.name);
-	// printf("%s\n", $6.type);
-	// printf("%d\n", t);
 	if(t>0) {
-		//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1);sem_errors++;
 		if(t == 1) {
             sprintf(errors[sem_errors], "Line %d: Type Mismatch in Declaration - number and string\n", countn+1);
 			sem_errors++;
@@ -299,7 +411,6 @@ statement: declaration IDENTIFIER { store_name(); } ':' datatype {add('I');} ini
 		$1.nd = mknode(NULL, NULL, $1.name, 0);  
 		char *id_type = get_type($1.name); 
 		if(strcmp(id_type, $3.type)) {
-			//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;	
 			int t =  check_types(id_type,$3.type); 
 			if(t>0) { 
 			if(t == 1) {
@@ -339,7 +450,6 @@ statement: declaration IDENTIFIER { store_name(); } ':' datatype {add('I');} ini
 }
 | IDENTIFIER relop expression { 
 	if(check_declaration($1.name)) {
-		//$1.nd = mknode(NULL, NULL, $1.name);  
 		char *id_type = get_type($1.name); 
 		if(strcmp(id_type, $3.type)) {
 			int t =  check_types(id_type,$3.type); 
@@ -436,7 +546,6 @@ init: '=' value { $$.nd = $2.nd; sprintf($$.type, "%s", $2.type); strcpy($$.name
 
 expression : expression addops term { 
 	if(strcmp($1.type, $3.type)){
-		//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;
 		if(!strcmp($1.type, "number") && !strcmp($3.type, "string")) {
 			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - number and string\n", countn+1);
 			sem_errors++;
@@ -482,7 +591,6 @@ expression : expression addops term {
 
 term : term mulops factor { 
 	if(strcmp($1.type, $3.type)){
-		//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;
 		if(!strcmp($1.type, "number") && !strcmp($3.type, "string")) {
 			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - number and string\n", countn+1);
 			sem_errors++;
@@ -528,7 +636,6 @@ term : term mulops factor {
 
 factor : base exponent base { 
 	if(strcmp($1.type, $3.type)){
-		//sprintf(errors[sem_errors], "Line %d: Type mismatch in expression\n", countn+1); sem_errors++;
 		if(!strcmp($1.type, "number") && !strcmp($3.type, "string")) {
 			sprintf(errors[sem_errors], "Line %d: Type Mismatch in Expression - number and string\n", countn+1);
 			sem_errors++;
