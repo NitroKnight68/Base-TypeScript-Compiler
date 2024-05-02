@@ -46,6 +46,10 @@
 "number"		      { strcpy(yylval.treeNode.name,(yytext)); return NUMBERTYPE; }
 "string"		      { strcpy(yylval.treeNode.name,(yytext)); return STRINGTYPE; }
 "boolean"		   { strcpy(yylval.treeNode.name,(yytext)); return BOOLEANTYPE; }
+"number[]"		      { strcpy(yylval.treeNode.name,(yytext)); return NUMBERARRAYTYPE; }
+"string[]"		      { strcpy(yylval.treeNode.name,(yytext)); return STRINGARRAYTYPE; }
+"boolean[]"		   { strcpy(yylval.treeNode.name,(yytext)); return BOOLEANARRAYTYPE; }
+
 "function"		   { strcpy(yylval.treeNode.name,(yytext)); return FUNCTION; }
 
 [/][/].*                    { ; }

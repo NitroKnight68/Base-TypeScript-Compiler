@@ -85,15 +85,18 @@ extern int yydebug;
     NUMBERTYPE = 286,              /* NUMBERTYPE  */
     STRINGTYPE = 287,              /* STRINGTYPE  */
     BOOLEANTYPE = 288,             /* BOOLEANTYPE  */
-    FUNCTION = 289,                /* FUNCTION  */
-    INTEGER = 290,                 /* INTEGER  */
-    FLOAT = 291,                   /* FLOAT  */
-    STRINGVALUE = 292,             /* STRINGVALUE  */
-    INC = 293,                     /* INC  */
-    DEC = 294,                     /* DEC  */
-    FOR = 295,                     /* FOR  */
-    POW = 296,                     /* POW  */
-    IDENTIFIER = 297               /* IDENTIFIER  */
+    NUMBERARRAYTYPE = 289,         /* NUMBERARRAYTYPE  */
+    STRINGARRAYTYPE = 290,         /* STRINGARRAYTYPE  */
+    BOOLEANARRAYTYPE = 291,        /* BOOLEANARRAYTYPE  */
+    FUNCTION = 292,                /* FUNCTION  */
+    INTEGER = 293,                 /* INTEGER  */
+    FLOAT = 294,                   /* FLOAT  */
+    STRINGVALUE = 295,             /* STRINGVALUE  */
+    INC = 296,                     /* INC  */
+    DEC = 297,                     /* DEC  */
+    FOR = 298,                     /* FOR  */
+    POW = 299,                     /* POW  */
+    IDENTIFIER = 300               /* IDENTIFIER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -133,21 +136,24 @@ extern int yydebug;
 #define NUMBERTYPE 286
 #define STRINGTYPE 287
 #define BOOLEANTYPE 288
-#define FUNCTION 289
-#define INTEGER 290
-#define FLOAT 291
-#define STRINGVALUE 292
-#define INC 293
-#define DEC 294
-#define FOR 295
-#define POW 296
-#define IDENTIFIER 297
+#define NUMBERARRAYTYPE 289
+#define STRINGARRAYTYPE 290
+#define BOOLEANARRAYTYPE 291
+#define FUNCTION 292
+#define INTEGER 293
+#define FLOAT 294
+#define STRINGVALUE 295
+#define INC 296
+#define DEC 297
+#define FOR 298
+#define POW 299
+#define IDENTIFIER 300
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 80 "parser.y"
+#line 82 "parser.y"
  
 	struct var_name { 
 		char name[100]; 
@@ -158,13 +164,15 @@ union YYSTYPE
     struct var_name2 {
         char name[100];
         struct node* nd;
-        char type[8];
+        int temp_arr;
+        char type[10];
         float value;
     } treeNode2;
 
 	struct var_name3 {
 		char name[100];
-        char type[8];
+        char type[10];
+        int temp_arr;
 		struct node* nd;
 		char if_body[5];
 		char else_body[5];
@@ -181,7 +189,7 @@ union YYSTYPE
         int next_quad;
 	} treeNode4; 
 
-#line 185 "y.tab.h"
+#line 193 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

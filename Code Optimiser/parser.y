@@ -50,6 +50,8 @@
     int param_idx = 0;
 	int temp_var = 0;
 	int is_loop = 0;
+	int is_array = 0;
+	int temp_arr = 0;
 
     char buff[400];
     char errors[10][100];
@@ -87,13 +89,15 @@
     struct var_name2 {
         char name[100];
         struct node* nd;
-        char type[8];
+        int temp_arr;
+        char type[10];
         float value;
     } treeNode2;
 
 	struct var_name3 {
 		char name[100];
-        char type[8];
+        char type[10];
+        int temp_arr;
 		struct node* nd;
 		char if_body[5];
 		char else_body[5];
@@ -111,10 +115,10 @@
 	} treeNode4; 
 }
 
-%token <treeNode>  IMPORT FROM AS CONSOLELOG SCAN IF WHILE ELSE RETURN ELIF LET VAR CONST ADD SUB MULT DIV LOG GE LE GT LT EQ NE TRUE FALSE AND OR NUMBERTYPE STRINGTYPE BOOLEANTYPE FUNCTION INTEGER FLOAT STRINGVALUE INC DEC FOR
+%token <treeNode>  IMPORT FROM AS CONSOLELOG SCAN IF WHILE ELSE RETURN ELIF LET VAR CONST ADD SUB MULT DIV LOG GE LE GT LT EQ NE TRUE FALSE AND OR NUMBERTYPE STRINGTYPE BOOLEANTYPE NUMBERARRAYTYPE STRINGARRAYTYPE BOOLEANARRAYTYPE FUNCTION INTEGER FLOAT STRINGVALUE INC DEC FOR
 %token <treeNode2> POW IDENTIFIER
-%type  <treeNode>  main importList imports moduleList modules parameter parameterList argument argumentList datatype body block console_outputs else statement declaration mulops addops relop return and_or 
-%type  <treeNode2> init expression value number term factor base exponent function procedure
+%type  <treeNode>  main importList imports moduleList modules parameter parameterList argument argumentList datatype body block console_outputs else statement declaration mulops addops relop return and_or list integerList stringList
+%type  <treeNode2> init expression value number term factor base exponent function procedure array assign
 %type  <treeNode3> condition
 %type  <treeNode4> M
 %define parse.error verbose 
@@ -274,6 +278,9 @@ parameter: IDENTIFIER {store_name();} ':' datatype {add('I');} {$4.nd = mknode(N
 datatype: NUMBERTYPE { insert_type(); }
 | STRINGTYPE { insert_type(); }
 | BOOLEANTYPE { insert_type(); }
+| NUMBERARRAYTYPE { insert_type(); }
+| STRINGARRAYTYPE { insert_type(); }
+| BOOLEANARRAYTYPE { insert_type(); }
 ;
 
 
@@ -338,7 +345,7 @@ condition: condition AND M condition {
     }
 	$$.label_for_while_start = $1.label_for_while_start;
 }
-| value relop value { 
+| expression relop expression { 
 	$$.nd = mknode($1.nd, $3.nd, $2.name, 0);
     char ifstt[400];
     if(is_loop) {
@@ -348,6 +355,26 @@ condition: condition AND M condition {
         sprintf(icg[ic_idx++], BOLDGREEN);
         is_loop = 0;
     }
+    
+    if (is_array == 0) {
+        if (strcmp($2.name, "==") == 0) {
+            sprintf(ifstt, "if %s %s %s ", $1.name, "==", $3.name);
+        } else if (strcmp($2.name, "==") == 0) {
+            sprintf(ifstt, "if %s %s %s ", $1.name, "!=", $3.name);
+        } else {
+            sprintf(ifstt, "if %s %s %s ", $1.name, $2.name, $3.name);
+        }
+    } else {
+        if (strcmp($2.name, "==") == 0) {
+            sprintf(ifstt, "if u%d %s u%d ", $1.temp_arr, "==", $3.temp_arr);
+        } else if (strcmp($2.name, "=!=") == 0) {
+            sprintf(ifstt, "if u%d %s u%d ", $1.temp_arr, "!=", $3.temp_arr);
+        } else {
+            sprintf(ifstt, "if u%d %s u%d ", $1.temp_arr, $2.name, $3.temp_arr);
+        }
+        is_array = 0;
+    }
+
     sprintf(ifstt, "\nif %s %s %s\n", $1.name, $2.name, $3.name);
     strcat(icg[ic_idx++], ifstt);
     $$.tlistsize = 0;
@@ -417,47 +444,64 @@ statement: declaration IDENTIFIER { store_name(); } ':' datatype {add('I');} ini
     set_value($2.name, $7.value);
 	sprintf(icg[ic_idx++], "%s = %s\n", $2.name, $7.name);
 } 
-| IDENTIFIER '=' expression { 
+| IDENTIFIER '=' assign { 
 	if(check_declaration($1.name)) {
-		$1.nd = mknode(NULL, NULL, $1.name, 0);  
-		char *id_type = get_type($1.name); 
-		if(strcmp(id_type, $3.type)) {
-			int t =  check_types(id_type,$3.type); 
-			if(t>0) { 
-			if(t == 1) {
-				sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - number and string\n", countn+1); 
-				sem_errors++;
-			}
-			else if(t == 2) {
-				sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - string and number\n", countn+1); 
-				sem_errors++;
-			}  
-			else if(t == 3) {
-				sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - number and boolean\n", countn+1); 
-				sem_errors++;
-			}  
-			else if(t == 4) {
-				 sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - boolean and number\n", countn+1); 
-				 sem_errors++;
-			}  
-			else if(t == 5) {
-				sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - boolean and string\n", countn+1); 
-				sem_errors++;
-			}  
-			else if(t == 6) {
-				sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - string and boolean\n", countn+1); 
-				sem_errors++;
-			}   
+        if(is_array == 0) {
+            $1.nd = mknode(NULL, NULL, $1.name, 0);  
+            char *id_type = get_type($1.name); 
+            if(strcmp(id_type, $3.type)) {
+                int t =  check_types(id_type,$3.type); 
+                if(t>0) { 
+                    if(t == 1) {
+                        sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - number and string\n", countn+1); 
+                        sem_errors++;
+                    }
+                    else if(t == 2) {
+                        sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - string and number\n", countn+1); 
+                        sem_errors++;
+                    }  
+                    else if(t == 3) {
+                        sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - number and boolean\n", countn+1); 
+                        sem_errors++;
+                    }  
+                    else if(t == 4) {
+                        sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - boolean and number\n", countn+1); 
+                        sem_errors++;
+                    }  
+                    else if(t == 5) {
+                        sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - boolean and string\n", countn+1); 
+                        sem_errors++;
+                    }  
+                    else if(t == 6) {
+                        sprintf(errors[sem_errors], "Line %d: Type Mismatch in Assignment - string and boolean\n", countn+1); 
+                        sem_errors++;
+                    }   
+                }
+            }
+            else {
+                $$.nd = mknode($1.nd, $3.nd, "=", 0);
+                $1.value = $3.value;
+                $1.nd->value = $3.value;
+                set_value($1.name, $3.value);
+                sprintf(icg[ic_idx++], "%s = %s\n", $1.name, $3.name);
+            }
         }
-		}
-		else {
-			$$.nd = mknode($1.nd, $3.nd, "=", 0);
-            $1.value = $3.value;
-            $1.nd->value = $3.value;
-            set_value($1.name, $3.value);
-            sprintf(icg[ic_idx++], "%s = %s\n", $1.name, $3.name);
-		}
+        else {
+            is_array = 0;
+            $$.nd = mknode($1.nd, $3.nd,"=", 0);
+            sprintf(icg[ic_idx++],"%s = u%d\n", $1.name, $3.temp_arr);
+        }
 	}
+}
+| array '=' expression {
+    is_array = 0;
+    $$.nd = mknode($1.nd, $3.nd, "=", 0);
+    sprintf(icg[ic_idx++], "u%d = %s\n", $1.temp_arr, $3.name);
+}
+| array '=' array {
+    is_array = 0;
+    $$.nd = mknode($1.nd, $3.nd, "=", 0);
+    sprintf(icg[ic_idx++], "u%d = u%d\n", $1.temp_arr, $3.temp_arr);
 }
 | IDENTIFIER relop expression { 
 	if(check_declaration($1.name)) {
@@ -542,6 +586,16 @@ statement: declaration IDENTIFIER { store_name(); } ':' datatype {add('I');} ini
 }
 ;
 
+assign: expression {
+    strcpy($$.type, $1.type);
+    $$.nd = $1.nd;
+}
+| array {
+    $$.nd = $1.nd;
+    $$.temp_arr = $1.temp_arr;
+}
+| procedure
+;
 
 declaration: LET { add('K');}
 | VAR { add('K');}
@@ -551,9 +605,28 @@ declaration: LET { add('K');}
 
 init: '=' value { $$.nd = $2.nd; sprintf($$.type, "%s", $2.type); strcpy($$.name, $2.name); $$.value = $2.value; $$.nd->value = $2.value; }
 | '=' expression { $$.nd = $2.nd; sprintf($$.type, "%s", $2.type); strcpy($$.name, $2.name); $$.value = $2.value; $$.nd->value = $2.value; }
+| '=' list {
+    $$.nd = mknode(NULL, NULL, "[]", 0);
+    is_array = 1;
+}
 | { sprintf($$.type, "%s", "null"); $$.nd = mknode(NULL, NULL, "NULL", 0); strcpy($$.name, "NULL"); }
 ;
 
+
+list: '[' integerList ']' {
+
+}
+|
+;
+
+integerList: INTEGER ',' integerList { $$.nd = mknode($1.nd, $3.nd, "IntegerList", 0); }
+| INTEGER { $$.nd = $1.nd; }
+;
+
+
+stringList: STRINGVALUE ',' stringList { $$.nd = mknode($1.nd, $3.nd, "StringList", 0); }
+| STRINGVALUE { $$.nd = $1.nd; }
+;
 
 expression : expression addops term { 
 	if(strcmp($1.type, $3.type)){
@@ -758,7 +831,20 @@ value: number { $$.nd = mknode(NULL, NULL, $1.name, 0); }
 | TRUE { add('K');} {$$.nd = mknode(NULL, NULL, $1.name, 0);}
 | FALSE { add('K');} {$$.nd = mknode(NULL, NULL, $1.name, 0);}
 | SCAN { add('K');} '('')' { $$.nd = mknode(NULL, NULL, "scan", 0); }
+| array { $$.nd = $1.nd; strcpy($$.type,$1.type); strcpy($$.name,$1.name); $$.temp_arr = $1.temp_arr; }
 ;
+
+array: IDENTIFIER '[' expression ']' { 
+    check_declaration($1.name);
+    char *id_type = get_type($1.name);
+    if(id_type != NULL) strcpy($$.type, id_type); 
+    char temp[100] = "";
+    $$.nd = mknode(NULL, NULL, $$.name, 0); 
+    is_array = 1;
+    $$.temp_arr = temp_arr++;
+    sprintf(icg[ic_idx++], "t%d = 4 * %s\n", temp_var++, $3.name);
+    sprintf(icg[ic_idx++], "u%d = %s[t%d]\n", $$.temp_arr, $1.name, temp_var - 1);
+}
 
 
 return: RETURN { add('K');} value ';'  { 
