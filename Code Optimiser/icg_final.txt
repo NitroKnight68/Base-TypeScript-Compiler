@@ -1,0 +1,60 @@
+[1m[32m
+[1m[33m
+PARAM param2
+[1m[32m[1m[33mPARAM param1
+[1m[32mvalueNumber = 3
+valueBoolean = true
+t0 = 5 * 6
+t1 = 7 * 4
+t2 = t0 + t1
+valueExpression = t2
+if valueNumber > valueExpression
+[1m[35mGOTO S14
+[1m[32m[1m[35mGOTO L1
+[1m[32m[1m[34m
+LABEL S14:[1m[32m
+if 3 > 4
+[1m[35mGOTO L0
+[1m[32m[1m[35mGOTO L1
+[1m[32m[1m[34m
+LABEL L0:
+[1m[32mt3 = valueNumber + 5
+valueNumber = t3
+[1m[35mJUMP TO L2
+[1m[34m
+LABEL L1:
+[1m[32mt4 = valueNumber - 2
+valueNumber = t4
+[1m[34m
+LABEL L2:
+[1m[32m[1m[34m
+LABEL L3:
+[1m[32m
+if valueNumber < 5
+[1m[35mGOTO L4
+[1m[32m[1m[35mGOTO S36
+[1m[32m[1m[34m
+LABEL S36:[1m[32m
+if 3 < 4
+[1m[35mGOTO L4
+[1m[32m[1m[35mGOTO L7
+[1m[32m[1m[34m
+LABEL L4:
+[1m[32mt5 = valueExpression + 7
+t6 = t5 / 2
+valueExpression = t6
+[1m[34m
+LABEL L5:
+[1m[32mt7 = valueNumber * 2
+valueNumber = t7
+[1m[35mJUMP TO L0
+[1m[32m[1m[34m
+LABEL L6:
+[1m[32mt8 = valueNumber + 1
+valueNumber = t8
+[1m[35mJUMP TO L3
+[1m[32m[1m[34m
+LABEL L7:
+[1m[32m[1m[33m
+RETURN valueNumber
+[1m[32m
