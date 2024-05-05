@@ -1,63 +1,74 @@
 [1m[32m
 [1m[33m
-PARAM size
+PARAM idx2
+[1m[32m[1m[33mPARAM idx1
 [1m[32m[1m[33mPARAM arr
-[1m[32mi = 0
+[1m[32mt0 = 4 * idx1
+u0 = arr[t0]
+temp = arr
+t1 = 4 * idx1
+u1 = arr[t1]
+t2 = 4 * idx2
+u2 = arr[t2]
+u1 = u2
+t3 = 4 * idx2
+u3 = arr[t3]
+u3 = temp
+[1m[33m
+PARAM hi
+[1m[32m[1m[33mPARAM lo
+[1m[32m[1m[33mPARAM arr
+[1m[32mt4 = 4 * hi
+u4 = arr[t4]
+pivot = arr
+t5 = lo - 1
+idx = t5
+i = lo
 [1m[34m
 LABEL L0:
 [1m[32m
-if i < size
+if i < hi
 [1m[35mGOTO L1
-[1m[32m[1m[35mGOTO L8
-[1m[32m[1m[34m
-LABEL L1:
-[1m[32mj = 0
-[1m[34m
-LABEL L2:
-[1m[32m
-if j < size
-[1m[35mGOTO L3
-[1m[32m[1m[35mGOTO L7
-[1m[32m[1m[34m
-LABEL L3:
-[1m[32mt2 = 4 * j
-u0 = arr[t2]
-t3 = j + 1
-t4 = 4 * t3
-u1 = arr[t4]
-if arr > arr
-[1m[35mGOTO L4
 [1m[32m[1m[35mGOTO L5
 [1m[32m[1m[34m
-LABEL L4:
-[1m[32mt5 = 4 * j
-u2 = arr[t5]
-temp = arr
-t6 = 4 * j
-u3 = arr[t6]
-t7 = j + 1
-t8 = 4 * t7
-u4 = arr[t8]
-u3 = u4
-t9 = j + 1
-t10 = 4 * t9
-u5 = arr[t10]
-u5 = temp
-[1m[35mJUMP TO L6
+LABEL L1:
+[1m[32mt7 = 4 * i
+u5 = arr[t7]
+if arr <= pivot
+[1m[35mGOTO L2
+[1m[32m[1m[35mGOTO L3
+[1m[32m[1m[34m
+LABEL L2:
+[1m[32m[1m[33m
+FUNCTION CALL swap
+[1m[32m[1m[35mJUMP TO L4
 [1m[34m
-LABEL L5:
+LABEL L3:
 [1m[32m[1m[34m
-LABEL L6:
-[1m[32m[1m[35mJUMP TO L2
-[1m[32m[1m[34m
-LABEL L7:
+LABEL L4:
 [1m[32m[1m[35mJUMP TO L0
 [1m[32m[1m[34m
-LABEL L8:
+LABEL L5:
 [1m[32m[1m[33m
-RETURN arr
-[1m[32minputArray = NULL
-inputSize = NULL
+FUNCTION CALL swap
+[1m[32m[1m[33m
+RETURN idx
+[1m[32m[1m[33m
+PARAM hi
+[1m[32m[1m[33mPARAM lo
+[1m[32m[1m[33mPARAM arr
+[1m[32m[1m[33m
+FUNCTION CALL partition
+[1m[32mpivotIndex = =
+t10 = pivotIndex - 1
 [1m[33m
-FUNCTION CALL bubbleSort
+FUNCTION CALL quickSort
+[1m[32mt11 = pivotIndex + 1
+[1m[33m
+FUNCTION CALL quickSort
+[1m[32marrayInput = =
+arrayLength = 5
+t12 = arrayLength - 1
+[1m[33m
+FUNCTION CALL quickSort
 [1m[32m

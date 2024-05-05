@@ -11,6 +11,6 @@ function bubbleSort(arr: number[], size: number) {
     return arr;
 }
 
-let inputArray: number[];
-let inputSize: number;
+let inputArray: number[] = [2, 9, 1, 5, 8];
+let inputSize: number = 5;
 bubbleSort(inputArray, inputSize);

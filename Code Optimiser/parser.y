@@ -117,7 +117,7 @@
 
 %token <treeNode>  IMPORT FROM AS CONSOLELOG SCAN IF WHILE ELSE RETURN ELIF LET VAR CONST ADD SUB MULT DIV LOG GE LE GT LT EQ NE TRUE FALSE AND OR NUMBERTYPE STRINGTYPE BOOLEANTYPE NUMBERARRAYTYPE STRINGARRAYTYPE BOOLEANARRAYTYPE FUNCTION INTEGER FLOAT STRINGVALUE INC DEC FOR
 %token <treeNode2> POW IDENTIFIER
-%type  <treeNode>  main importList imports moduleList modules parameter parameterList argument argumentList datatype body block console_outputs else statement declaration mulops addops relop return and_or list integerList stringList
+%type  <treeNode>  main importList imports moduleList modules parameter parameterList argument argumentList datatype body block console_outputs else statement declaration mulops addops relop return and_or list integerList stringList ending
 %type  <treeNode2> init expression value number term factor base exponent function procedure array assign
 %type  <treeNode3> condition
 %type  <treeNode4> M
@@ -135,10 +135,10 @@ importList: imports importList { $$.nd = mknode($1.nd, $2.nd, "ImportList", 0); 
 ;
 
 
-imports: IMPORT '{' moduleList '}' FROM STRINGVALUE ';' { $$.nd = $3.nd; }
-| IMPORT '{' modules '}' AS IDENTIFIER FROM STRINGVALUE ';' { $$.nd = $3.nd; }
-| IMPORT moduleList FROM STRINGVALUE ';' { $$.nd = $2.nd; }
-| IMPORT modules AS IDENTIFIER FROM STRINGVALUE ';' { $$.nd = $2.nd; }
+imports: IMPORT '{' moduleList '}' FROM STRINGVALUE ending { $$.nd = $3.nd; }
+| IMPORT '{' modules '}' AS IDENTIFIER FROM STRINGVALUE ending { $$.nd = $3.nd; }
+| IMPORT moduleList FROM STRINGVALUE ending { $$.nd = $2.nd; }
+| IMPORT modules AS IDENTIFIER FROM STRINGVALUE ending { $$.nd = $2.nd; }
 ;
 
 
@@ -182,7 +182,7 @@ block: function { $$.nd = $1.nd; }
 	sprintf(icg[ic_idx++], "\nLABEL L%d:\n",label++);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
-| FOR { add('K'); is_loop = 1;}'(' statement ';' condition {
+| FOR { add('K'); is_loop = 1;}'(' statement ending condition {
     sprintf(icg[ic_idx++], BOLDBLUE);
     sprintf(icg[ic_idx++], "\nLABEL L%d:\n", label++);
     sprintf(icg[ic_idx++], BOLDGREEN);
@@ -191,7 +191,7 @@ block: function { $$.nd = $1.nd; }
         sprintf(temp, "\033[1m\033[35mGOTO L%d\n\033[1m\033[32m", label - 1);
         strcat(icg[$6.tlist[i]], temp);
     }
-} ';' statement ')' '{' body '}' {
+} ending statement ')' '{' body '}' {
 	struct node *temp = mknode($6.nd, $9.nd, "Condition", 0);
     struct node *temp2 = mknode($4.nd, temp, "Initialisation", 0);  
     $$.nd = mknode(temp2, $12.nd, $1.name, 0);
@@ -235,8 +235,8 @@ block: function { $$.nd = $1.nd; }
     sprintf(icg[ic_idx++], "\nLABEL L%d:\n", label++);
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
-| statement ';' { $$.nd = $1.nd; }
-| CONSOLELOG { add('K');} '(' console_outputs ')' ';' { struct node *data = mknode(NULL, NULL, $4.name, 0); $$.nd = mknode(NULL, data, "ConsoleLog", 0); } 
+| statement ending { $$.nd = $1.nd; }
+| CONSOLELOG { add('K');} '(' console_outputs ')' ending { struct node *data = mknode(NULL, NULL, $4.name, 0); $$.nd = mknode(NULL, data, "ConsoleLog", 0); } 
 ;
 
 
@@ -253,7 +253,7 @@ function: FUNCTION { add('F'); } IDENTIFIER { add('I'); } '(' parameterList ')' 
 }  
 ;
 
-procedure: IDENTIFIER '(' argumentList ')' ';' { $1.nd = mknode(NULL, NULL, $1.name, 0); $$.nd = mknode($1.nd, $3.nd, "FunctionCall", 0); sprintf(icg[ic_idx++], BOLDYELLOW); sprintf(icg[ic_idx++], "\nFUNCTION CALL %s\n", $1.name); sprintf(icg[ic_idx++], BOLDGREEN); }
+procedure: IDENTIFIER '(' argumentList ')' ending { $1.nd = mknode(NULL, NULL, $1.name, 0); $$.nd = mknode($1.nd, $3.nd, "FunctionCall", 0); sprintf(icg[ic_idx++], BOLDYELLOW); sprintf(icg[ic_idx++], "\nFUNCTION CALL %s\n", $1.name); sprintf(icg[ic_idx++], BOLDGREEN); }
 ;
 
 argumentList: argument ',' argumentList { check_declaration($1.name); $$.nd = mknode($1.nd, $3.nd, "ArgumentList", 0); }
@@ -263,6 +263,7 @@ argumentList: argument ',' argumentList { check_declaration($1.name); $$.nd = mk
 
 argument: IDENTIFIER {store_name();} { $1.nd = mknode(NULL, NULL, $1.name, 0); $$.nd = mknode(NULL, $1.nd, "Argument", 0); }
 | value { $1.nd = mknode(NULL, NULL, $1.name, 0); $$.nd = mknode(NULL, $1.nd, "Argument", 0); }
+| expression { $1.nd = mknode(NULL, NULL, $1.name, 0); $$.nd = mknode(NULL, $1.nd, "Argument", 0); }
 ;
 
 parameterList: parameter ',' parameterList { $$.nd = mknode($1.nd, $3.nd, "ParameterList", 0); sprintf(icg[ic_idx++], BOLDYELLOW); sprintf(icg[ic_idx++], "PARAM %s\n", $1.name); sprintf(icg[ic_idx++], BOLDGREEN); }
@@ -609,6 +610,7 @@ init: '=' value { $$.nd = $2.nd; sprintf($$.type, "%s", $2.type); strcpy($$.name
     $$.nd = mknode(NULL, NULL, "[]", 0);
     is_array = 1;
 }
+| '=' procedure { $$.nd = $2.nd; sprintf($$.type, "%s", $2.type); }
 | { sprintf($$.type, "%s", "null"); $$.nd = mknode(NULL, NULL, "NULL", 0); strcpy($$.name, "NULL"); }
 ;
 
@@ -847,7 +849,7 @@ array: IDENTIFIER '[' expression ']' {
 }
 
 
-return: RETURN { add('K');} value ';'  { 
+return: RETURN { add('K');} value ending  { 
     $1.nd = mknode(NULL, NULL, "return", 0);
     $$.nd = mknode($1.nd, $3.nd, "ReturnStatement", 0);
     sprintf(icg[ic_idx++], BOLDYELLOW);
@@ -855,6 +857,10 @@ return: RETURN { add('K');} value ';'  {
     sprintf(icg[ic_idx++], BOLDGREEN);
 }
 | { $$.nd = NULL; } 
+;
+
+ending: ';'
+|
 ;
 
 
@@ -937,7 +943,7 @@ void printSymbolTable(){
 	int i=0;
 
 	for(i=0; i<count; i++) {
-		printf("Line No:\033[1m\033[34m%d\033[0m \t\033[1m\033[32m%s\033[0m \t\t\t\033[1m\033[35m%s\033[0m \t\t\033[1m\033[34m%s\033[0m \t\n", symbol_table[i].line_no, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].id_name);
+		printf("Line No:\033[1m\033[34m%d\033[0m \t\033[1m\033[32m%s\033[0m \t\t\t\033[1m\033[35m%s\033[0m \t\t\033[1m\033[34m%s\033[0m \t\n", symbol_table[i].line_no + 1, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].id_name);
 	}
 
 	for(i=0;i<count;i++) {
