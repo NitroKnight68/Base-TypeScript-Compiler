@@ -92,18 +92,11 @@ def constantFolding(allLines) :
         updatedAllLines.append(evaluateExpression(line))
     return allLines
 
-
-'''def constantFolding(allLines):
-    updatedAllLines = []
-    for line in allLines :
-        updatedAllLines.append(evaluateExpression(line))
-    return updatedAllLines'''
-
 def constantPropagation(lines):
     variables = {}
     for i in range(len(lines)):
         if '=' in lines[i]:
-            lhs, rhs = lines[i].split('=')
+            lhs, rhs, *rest = lines[i].split('=')
             # Check if RHS is a constant or contains constants
             rhs_tokens = rhs.split()
             for j, token in enumerate(rhs_tokens):
@@ -197,13 +190,13 @@ def deadCodeElimination(allLines):
 
 
 if __name__ == "__main__":
-    with open("output_file.txt","r") as inFile, open("output_file_final.txt", "w") as outFile:
+    with open("icg_base.txt","r") as inFile, open("icg_final.txt", "w") as outFile:
         for line in inFile:
             if not line.isspace():
                 outFile.write(line)
     
     allLines = []
-    f = open("output_file_final.txt", "r")
+    f = open("icg_final.txt", "r")
     for line in f:
         allLines.append(line)
     f.close()
@@ -227,8 +220,6 @@ if __name__ == "__main__":
     
     
     icgAfterDeadCodeElimination = deadCodeElimination(icgAfterStrengthReduction)
-    print("Optimized ICG: \n")
     showICG(icgAfterDeadCodeElimination)
 
     print("\n")
-    
